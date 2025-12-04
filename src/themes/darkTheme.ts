@@ -1,11 +1,14 @@
 import { createTheme } from "@mui/material/styles";
+import { components } from "./components";
 
 export const darkTheme = createTheme({
   typography: {
     fontFamily: "Niramit, sans-serif",
+    fontWeightBold: 700,
   },
 
   components: {
+    ...components,
     MuiCssBaseline: {
       styleOverrides: `
         @font-face {
@@ -39,6 +42,16 @@ export const darkTheme = createTheme({
     background: {
       default: "#242C39",
       paper: "#242C39",
+    },
+    text: {
+      primary: "#FFFFFF",
+      secondary: "#ABABAB",
+    },
+    primary: {
+      main: "#1D8D94",
+    },
+    error: {
+      main: "#F66066",
     },
   },
 });

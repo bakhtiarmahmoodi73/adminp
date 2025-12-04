@@ -10,6 +10,11 @@ export default defineConfig({
     host: true,
     open: true
   },
+    resolve: {
+    alias: {
+      '@mui/styled-engine': '@mui/styled-engine-sc',
+    },
+  },
   build: {
     outDir: 'dist',
     sourcemap: true,
