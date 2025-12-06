@@ -7,6 +7,7 @@ import Stack from "@mui/material/Stack";
 import { Button, Container } from "@mui/material";
 import logo from "../../assets/images/logo/logoImage.svg";
 import user from "../../assets/images/users/Frame (1).svg";
+import { ButtonHeader, Img } from "../styled/LoginStyled";
 
 const menuItems = [
   { label: "Home", weight: 700, size: "16px", path: "/" },
@@ -46,6 +47,7 @@ const Header: FC = () => {
         border: "none",
       }}
     >
+    <ButtonHeader>Login&nbsp;&nbsp;/&nbsp;Register <Img src={user} /> </ButtonHeader>
       <Box
        sx={{
     all: "unset",       // حذف کامل تمام استایل‌های پیش‌فرض

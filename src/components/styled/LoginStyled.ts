@@ -1,11 +1,23 @@
 import { styled } from "@mui/material/styles";
-import {
-  Box,
-  Card,
-  Typography,
-  Button,
-  Link,
-} from "@mui/material";
+import { Box, Card, Typography, Button, Link } from "@mui/material";
+
+
+export const Img = styled("img")(({ theme }) => ({
+  display: "block",
+  backgroundColor: "#ffffff",
+  width: '100%',
+  maxWidth: 400,
+  height: 'auto',
+  borderRadius: theme.shape.borderRadius,
+}));
+
+
+
+export const ButtonHeader = styled(Button)({
+  all: "unset",
+  display: "flex",
+  backgroundColor: "red",
+});
 
 export const LoginCardContainer = styled(Card)(({ theme }) => ({
   all: "unset",
