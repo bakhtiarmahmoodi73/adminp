@@ -1,48 +1,57 @@
 import React from "react";
 import { useFormik } from "formik";
 import { z } from "zod";
-import log from "../assets/images/logo/login.svg";
 import {
   Box,
-  TextField, 
+  TextField,
   InputAdornment,
   Alert,
   Snackbar,
-  Typography, 
+  Typography,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../store";
 import { loginUser, clearError } from "../store/slices/authSlice";
-import closeImg from "../assets/images/errorcircle/Frame (2).svg";
-import eyeOpenIcon from "../assets/images/passwordicon/Frame (3).svg";
+import CloseIcon from "../assets/images/errorcircle/Frame (2).svg?react";
+import EyeOpenIcon from "../assets/images/passwordicon/Frame (3).svg?react";
 import {
   LoginCardContainer,
   FormBox,
   LabelText,
   LoginButton,
-  CustomLink,
+  TypographyLogin,
 } from "../components/styled/LoginStyled";
 
-// تعریف Schema با Zod
-const loginSchema = z.object({
+const emailSchema = z.object({
   email: z
     .string()
     .min(1, "The email is incorrect")
     .email("The email is incorrect"),
+});
+
+const passwordSchema = z.object({
   password: z
     .string()
     .min(1, "Password is required")
     .min(6, "The Password Is Incorrect"),
-  rememberMe: z.boolean().default(false),
 });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type LoginFormData = {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+};
 
 const LoginCard: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const [showError, setShowError] = React.useState<boolean>(false);
+  const [emailError, setEmailError] = React.useState<string>("");
+  const [passwordError, setPasswordError] = React.useState<string>("");
+  const [emailTouched, setEmailTouched] = React.useState<boolean>(false);
+  const [passwordTouched, setPasswordTouched] = React.useState<boolean>(false);
+  const [showPassword, setShowPassword] = React.useState<boolean>(false);
 
   const { isLoading, error, isAuthenticated } = useSelector(
     (state: RootState) => state.auth
@@ -60,25 +69,54 @@ const LoginCard: React.FC = () => {
     }
   }, [error]);
 
+  const validateEmail = (value: string) => {
+    const result = emailSchema.safeParse({ email: value });
+    if (!result.success) {
+      return result.error.issues[0]?.message || "The email is incorrect";
+    }
+    return "";
+  };
+
+  const validatePassword = (value: string) => {
+    const result = passwordSchema.safeParse({ password: value });
+    if (!result.success) {
+      return result.error.issues[0]?.message || "Password is required";
+    }
+    return "";
+  };
+
   const formik = useFormik<LoginFormData>({
     initialValues: {
       email: "",
       password: "",
       rememberMe: false,
     },
-    validate: (values) => {
-      const result = loginSchema.safeParse(values);
-      if (!result.success) {
-        const errors: Record<string, string> = {};
-        result.error.issues.forEach((issue) => {
-          const path = issue.path[0] as string;
-          errors[path] = issue.message;
-        });
-        return errors;
-      }
+    validate: () => {
       return {};
     },
+    validateOnBlur: false,
+    validateOnChange: false,
     onSubmit: async (values) => {
+      let hasError = false;
+      
+      if (!values.email.trim()) {
+        setEmailTouched(true);
+        const emailValidationError = validateEmail(values.email);
+        setEmailError(emailValidationError);
+        if (emailValidationError) hasError = true;
+      }
+      
+      if (!values.password.trim()) {
+        setPasswordTouched(true);
+        const passwordValidationError = validatePassword(values.password);
+        setPasswordError(passwordValidationError);
+        if (passwordValidationError) hasError = true;
+      }
+      
+      if (hasError) {
+        return;
+      }
+      
       try {
         await dispatch(
           loginUser({
@@ -92,13 +130,38 @@ const LoginCard: React.FC = () => {
     },
   });
 
-  const handleRegisterClick = (): void => {
-    navigate("/auth/register");
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    formik.handleChange(e);
+    if (emailTouched) {
+      const error = validateEmail(e.target.value);
+      setEmailError(error);
+    }
   };
 
-  const handleForgotPasswordClick = (e: React.MouseEvent): void => {
-    e.preventDefault();
-    navigate("/auth/forgot-password");
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    formik.handleChange(e);
+    if (passwordTouched) {
+      const error = validatePassword(e.target.value);
+      setPasswordError(error);
+    }
+  };
+
+  const handleEmailBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (e.target.value.trim() !== "") {
+      setEmailTouched(true);
+      const error = validateEmail(e.target.value);
+      setEmailError(error);
+    }
+    formik.handleBlur(e);
+  };
+
+  const handlePasswordBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (e.target.value.trim() !== "") {
+      setPasswordTouched(true);
+      const error = validatePassword(e.target.value);
+      setPasswordError(error);
+    }
+    formik.handleBlur(e);
   };
 
   const handleCloseError = (): void => {
@@ -106,17 +169,73 @@ const LoginCard: React.FC = () => {
     dispatch(clearError());
   };
 
-  const handleClearEmail = (): void => {
+  const handleClearEmail = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     formik.setFieldValue("email", "");
-    formik.setFieldTouched("email", false);
+    setEmailTouched(false);
+    setEmailError("");
+    
+    if (passwordTouched) {
+      const error = validatePassword(formik.values.password);
+      setPasswordError(error);
+    }
   };
 
-  const hasEmailError = formik.touched.email && Boolean(formik.errors.email);
-  const hasPasswordError =
-    formik.touched.password && Boolean(formik.errors.password);
+  const handleTogglePasswordVisibility = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowPassword(!showPassword);
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    let hasError = false;
+    
+    if (!formik.values.email.trim()) {
+      setEmailTouched(true);
+      const emailValidationError = validateEmail(formik.values.email);
+      setEmailError(emailValidationError);
+      if (emailValidationError) hasError = true;
+    }
+    
+    if (!formik.values.password.trim()) {
+      setPasswordTouched(true);
+      const passwordValidationError = validatePassword(formik.values.password);
+      setPasswordError(passwordValidationError);
+      if (passwordValidationError) hasError = true;
+    }
+    
+    if (hasError) {
+      return;
+    }
+    
+    dispatch(
+      loginUser({
+        email: formik.values.email,
+        password: formik.values.password,
+      })
+    );
+  };
+
+  const hasEmailError = emailTouched && Boolean(emailError);
+  const hasPasswordError = passwordTouched && Boolean(passwordError);
+
+  const getCardHeight = () => {
+    if (hasPasswordError) return "607px";
+    return "568px";
+  };
 
   return (
-    <>
+    <Box
+      sx={{
+        mt:"157px",
+        height: getCardHeight(),
+        mb:"152px"
+      }}
+    >
       <Snackbar
         open={showError}
         autoHideDuration={6000}
@@ -127,17 +246,9 @@ const LoginCard: React.FC = () => {
           {error}
         </Alert>
       </Snackbar>
-
-      <LoginCardContainer
-        style={{
-          height: hasPasswordError ? "607px" : "568px",
-        }}
-      >
-        <Box component="form" onSubmit={formik.handleSubmit} noValidate>
-          <Box
-            component="img"
-            src={log}
-            alt="Login Logo"
+      <LoginCardContainer>
+        <Box component="form" onSubmit={handleFormSubmit} noValidate>
+          <TypographyLogin
             sx={{
               width: "100%",
               maxWidth: "91px",
@@ -145,8 +256,9 @@ const LoginCard: React.FC = () => {
               marginX: "auto",
               display: "block",
             }}
-          />
-
+          >
+            Login
+          </TypographyLogin>
           <LabelText sx={{ mt: "31px" }}>Email&nbsp;:</LabelText>
 
           <FormBox>
@@ -155,14 +267,20 @@ const LoginCard: React.FC = () => {
               type="email"
               placeholder="Please Enter Your Email"
               value={formik.values.email}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              onChange={handleEmailChange}
+              onBlur={handleEmailBlur}
               error={hasEmailError}
-              helperText={hasEmailError && "The Email Is Incorrect"}
+              helperText={hasEmailError && emailError}
               fullWidth
               sx={{
                 "& .MuiOutlinedInput-input": {
-                  paddingRight: hasEmailError ? "40px !important" : "14px !important",
+                  paddingRight: hasEmailError
+                    ? "40px !important"
+                    : "14px !important",
+                },
+                "& .MuiInputBase-input::placeholder": {
+                  color: "#FFFFFF !important",
+                  opacity: 1,
                 },
               }}
               InputProps={{
@@ -180,12 +298,19 @@ const LoginCard: React.FC = () => {
                       onClick={handleClearEmail}
                       sx={{ cursor: "pointer" }}
                       aria-label="Clear email"
+                      component="button"
+                      type="button"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        padding: 0,
+                        margin: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
                     >
-                      <img
-                        src={closeImg}
-                        alt="clear"
-                        style={{ width: "20px", height: "20px" }}
-                      />
+                      <CloseIcon style={{ width: "20px", height: "20px" }} />
                     </Box>
                   </InputAdornment>
                 ),
@@ -200,14 +325,20 @@ const LoginCard: React.FC = () => {
           <FormBox>
             <TextField
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Please Enter Your Password"
               value={formik.values.password}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              onChange={handlePasswordChange}
+              onBlur={handlePasswordBlur}
               error={hasPasswordError}
-              helperText={hasPasswordError && formik.errors.password}
+              helperText={hasPasswordError && passwordError}
               fullWidth
+              sx={{
+                "& .MuiInputBase-input::placeholder": {
+                  color: "#FFFFFF !important",
+                  opacity: 1,
+                },
+              }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment
@@ -219,11 +350,24 @@ const LoginCard: React.FC = () => {
                       transform: "translateY(-50%)",
                     }}
                   >
-                    <img
-                      src={eyeOpenIcon}
-                      alt="Show password"
-                      style={{ width: "16px", height: "16px" }}
-                    />
+                    <Box
+                      onClick={handleTogglePasswordVisibility}
+                      sx={{ cursor: "pointer" }}
+                      aria-label="Toggle password visibility"
+                      component="button"
+                      type="button"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        padding: 0,
+                        margin: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <EyeOpenIcon style={{ width: "16px", height: "16px" }} />
+                    </Box>
                   </InputAdornment>
                 ),
               }}
@@ -252,14 +396,19 @@ const LoginCard: React.FC = () => {
               />
               <LabelText sx={{ ml: "6px", mt: 0 }}>Keep Me Login</LabelText>
             </Box>
-            
-            <CustomLink
-              href="#"
-              onClick={handleForgotPasswordClick}
-              sx={{ mr: "36px" }}
+
+            <Link
+              to="/auth/forgot-password"
+              style={{
+                marginRight: "36px",
+                color: "#1D8D94",
+                fontSize: "16px",
+                fontWeight: 700,
+                letterSpacing: "0%",
+              }}
             >
               Forgot Your Password?
-            </CustomLink>
+            </Link>
           </Box>
 
           <LoginButton type="submit" disabled={isLoading}>
@@ -270,30 +419,32 @@ const LoginCard: React.FC = () => {
             align="center"
             sx={{
               mt: "27px",
+              mb: "48px",
               color: "#ABABAB",
               fontWeight: 700,
             }}
           >
-            Dont Have An Account?{" "}
-            <CustomLink 
-              component="button" 
-              onClick={handleRegisterClick}
-              sx={{ 
-                background: 'none',
-                border: 'none',
+            Dont Have An Account? &nbsp;
+            <Link
+              to="/auth/register"
+              style={{
+                color: "#1D8D94",
+                fontSize: "16px",
+                textDecoration: "none",
+                background: "none",
+                border: "none",
                 padding: 0,
-                font: 'inherit',
-                cursor: 'pointer',
-                textDecoration: 'none'
+                font: "inherit",
+                cursor: "pointer",
+                fontWeight: "inherit",
               }}
             >
               Register
-            </CustomLink>
+            </Link>
           </Typography>
         </Box>
       </LoginCardContainer>
-    </>
+    </Box>
   );
 };
-
 export default LoginCard;

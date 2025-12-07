@@ -1,13 +1,7 @@
 // src/pages/ChangePasswordPage/ChangePasswordPage.tsx
 import React, { useState } from "react";
-import {
-  Box,
-  Card,
-  TextField,
-  Button,
-  Typography,
-} from "@mui/material";
-import changePasswordImage from "../../src/assets/images/changepassword/Change password.svg";
+import { Box, Card, TextField, Button, Typography } from "@mui/material";
+import { TypographyLogin } from "../components/styled/LoginStyled";
 
 // تعریف تایپ برای form data
 interface ChangePasswordFormData {
@@ -33,7 +27,7 @@ const ChangePasswordPage: React.FC = () => {
     e.preventDefault();
     // منطق تغییر رمز عبور اینجا پیاده‌سازی می‌شود
     console.log("Change password data:", formData);
-    
+
     // بعد از تغییر موفق رمز عبور، به صفحه لاگین هدایت شود
     // navigate("/auth/login");
   };
@@ -41,7 +35,7 @@ const ChangePasswordPage: React.FC = () => {
   return (
     <Card
       sx={{
-        display: "block",
+        // display: "block",
         maxWidth: "560px",
         width: "100%",
         height: "auto",
@@ -54,10 +48,7 @@ const ChangePasswordPage: React.FC = () => {
       }}
     >
       <Box component="form" onSubmit={handleConfirm}>
-        <Box
-          component="img"
-          src={changePasswordImage} 
-          alt="Change Password Logo"
+        <TypographyLogin
           sx={{
             width: "100%",
             maxWidth: "292px",
@@ -65,7 +56,9 @@ const ChangePasswordPage: React.FC = () => {
             marginX: "auto",
             display: "block",
           }}
-        />
+        >
+          Change Password
+        </TypographyLogin>
 
         {/* فیلد New Password */}
         <Box sx={{ mt: "55px", ml: "38px", mr: "36px" }}>
@@ -74,12 +67,13 @@ const ChangePasswordPage: React.FC = () => {
               fontWeight: 700,
               color: "#ABABAB",
               fontSize: "16px",
-              mb: "15px"
+              mb: "15px",
             }}
           >
             New Password:
           </Typography>
           <TextField
+            type="password"
             fullWidth
             name="newPassword"
             placeholder="Please Enter Your  Password"
@@ -108,7 +102,6 @@ const ChangePasswordPage: React.FC = () => {
                 opacity: 1,
               },
             }}
-           
           />
         </Box>
 
@@ -119,12 +112,13 @@ const ChangePasswordPage: React.FC = () => {
               fontWeight: 700,
               color: "#ABABAB",
               fontSize: "16px",
-              mb: "15px"
+              mb: "15px",
             }}
           >
             Repeat New Password:
           </Typography>
           <TextField
+            type="password"
             fullWidth
             name="repeatNewPassword"
             placeholder="Please Repeat Your  Password"
@@ -153,7 +147,6 @@ const ChangePasswordPage: React.FC = () => {
                 opacity: 1,
               },
             }}
-          
           />
         </Box>
 
@@ -174,9 +167,9 @@ const ChangePasswordPage: React.FC = () => {
             color: "#FFFFFF",
             textTransform: "none",
             boxShadow: "0 4px 8px rgba(29, 141, 148, 0.5)",
-            '&:hover': {
+            "&:hover": {
               backgroundColor: "#16666c",
-            }
+            },
           }}
         >
           Confirm

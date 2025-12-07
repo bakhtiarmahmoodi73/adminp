@@ -16,8 +16,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../store';
 import { sendResetPasswordEmail, clearError } from "../store/slices/forgotPasswordSlice";
-import forgotPasswordImage from "../assets/images/forgot/forget password.svg";
 import closeImg from "../assets/images/errorcircle/Frame (2).svg"
+import { TypographyLogin } from "../components/styled/LoginStyled";
 
 // تعریف Schema با Zod
 const forgotPasswordSchema = z.object({
@@ -108,7 +108,7 @@ const ForgotPasswordPage: React.FC = () => {
 
       <Card
         sx={{
-          display: "block",
+          // display: "block",
           maxWidth: "560px",
           width: "100%",
           height:hasEmailError ? "405px" : "366px",
@@ -120,20 +120,17 @@ const ForgotPasswordPage: React.FC = () => {
           
         }}
       >
+         
         <Box component="form" onSubmit={formik.handleSubmit} noValidate>
-          {/* تصویر در بالای کارت */}
-          <Box
-            component="img"
-            src={forgotPasswordImage} 
-            alt="Forgot Password Logo"
-            sx={{
+         
+
+         <TypographyLogin  sx={{
               width: "100%",
               maxWidth: "271px",
               marginTop: "32px",
               marginX: "auto",
               display: "block",
-            }}
-          />
+            }}>Forget Password</TypographyLogin>
 
        {/* فیلد Email */}
 <Box sx={{ mt: "55px", ml: "38px", mr: "36px" }}>

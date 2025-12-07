@@ -1,15 +1,8 @@
 // src/pages/RegisterPage/RegisterPage.tsx
 import React, { useState } from "react";
-import {
-  Box,
-  Card,
-  TextField,
-  Button,
-  Typography,
-  Link,
-} from "@mui/material";
+import { Box, Card, TextField, Button, Typography, Link } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import register from "../../src/assets/images/register/register.svg"
+import { TypographyLogin } from "../components/styled/LoginStyled";
 
 // تعریف تایپ برای form data
 interface RegisterFormData {
@@ -38,7 +31,7 @@ const RegisterPage: React.FC = () => {
     e.preventDefault();
     // منطق ثبت‌نام اینجا پیاده‌سازی می‌شود
     console.log("Register data:", formData);
-    
+
     // بعد از ثبت‌نام موفق، به صفحه لاگین هدایت شود
     // navigate("/login");
   };
@@ -50,7 +43,6 @@ const RegisterPage: React.FC = () => {
   return (
     <Card
       sx={{
-        display: "block",
         maxWidth: "560px",
         width: "100%",
         height: "606px",
@@ -61,29 +53,25 @@ const RegisterPage: React.FC = () => {
         backgroundColor: "#2A3342",
       }}
     >
+      <TypographyLogin
+        sx={{
+          width: "100%",
+          maxWidth: "138px",
+          marginTop: "50px",
+          marginX: "auto",
+          display: "block",
+        }}
+      >
+        Register
+      </TypographyLogin>
       <Box component="form" onSubmit={handleRegister}>
-        {/* تصویر در بالای کارت */}
-        <Box
-          component="img"
-          src={register} 
-          alt="Register Logo"
-          sx={{
-            width: "100%",
-            maxWidth: "138px",
-            marginTop: "32px",
-            marginX: "auto",
-            display: "block",
-          }}
-        />
-
-        {/* فیلد Name */}
         <Box sx={{ mt: "31px", ml: "39px", mr: "36px" }}>
           <Typography
             sx={{
               fontWeight: 700,
               color: "#ABABAB",
               fontSize: "16px",
-              mb: "15px"
+              mb: "15px",
             }}
           >
             Name:
@@ -178,6 +166,7 @@ const RegisterPage: React.FC = () => {
             Password:
           </Typography>
           <TextField
+            type="password"
             fullWidth
             name="password"
             placeholder="Please Enter Your Password"
@@ -226,9 +215,9 @@ const RegisterPage: React.FC = () => {
             color: "#FFFFFF",
             textTransform: "none",
             boxShadow: "0 4px 8px rgba(29, 141, 148, 0.5)",
-            '&:hover': {
+            "&:hover": {
               backgroundColor: "#16666c",
-            }
+            },
           }}
         >
           Register
@@ -249,15 +238,15 @@ const RegisterPage: React.FC = () => {
             type="button"
             onClick={handleLoginClick}
             sx={{
-              all:"unset",
+              all: "unset",
               textDecoration: "none",
               fontWeight: 700,
               color: "#1D8D94",
               cursor: "pointer",
               textTransform: "none",
-              '&:hover': {
+              "&:hover": {
                 textDecoration: "underline",
-              }
+              },
             }}
           >
             Login

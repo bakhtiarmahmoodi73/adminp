@@ -1,22 +1,29 @@
 import { styled } from "@mui/material/styles";
 import { Box, Card, Typography, Button, Link } from "@mui/material";
 
-
-export const Img = styled("img")(({ theme }) => ({
+export const Img = styled("img")(() => ({
   display: "block",
-  backgroundColor: "#ffffff",
-  width: '100%',
-  maxWidth: 400,
-  height: 'auto',
-  borderRadius: theme.shape.borderRadius,
+  width: "24px",
+  height: "24px",
+  cursor: "pointer",
+  marginRight: "16px",
+  boxSizing: "border-box",
+  marginLeft: 0,
 }));
 
-
-
 export const ButtonHeader = styled(Button)({
-  all: "unset",
   display: "flex",
-  backgroundColor: "red",
+  cursor: "pointer",
+  color: "#E4E4E4",
+  marginTop: "55px",
+  fontSize: "16px",
+  textTransform: "none",
+  lineHeight: "100%",
+  letterSpacing: "0%",
+  boxSizing: "border-box",
+  fontFamily: "Niramit",
+  backgroundColor: "inherit",
+  padding: 0,
 });
 
 export const LoginCardContainer = styled(Card)(({ theme }) => ({
@@ -72,3 +79,16 @@ export const CustomLink = styled(Link)({
     textDecoration: "underline",
   },
 }) as typeof Link;
+
+export const TypographyLogin = styled(Typography)(({
+  fontSize: "36px",
+  fontWeight: 700,
+  background: "linear-gradient(91.79deg, #1D8D94 2.58%, #91D2A3 126.11%)",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  backgroundClip: "text",
+  color: "transparent",
+  display: "inline-block",
+
+}));
+
