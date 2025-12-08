@@ -1,41 +1,82 @@
 // src/pages/ChangePasswordPage/ChangePasswordPage.tsx
 import React, { useState } from "react";
-import { Box, Card, TextField, Button, Typography } from "@mui/material";
+import { useFormik } from "formik";
+import { z } from "zod";
+import { Box, Card, TextField, Button, Typography, InputAdornment } from "@mui/material";
 import { TypographyLogin } from "../components/styled/LoginStyled";
+import EyeOpenIcon from "../assets/images/passwordicon/Frame (3).svg?react";
+
+// تعریف schema با Zod
+const changePasswordSchema = z.object({
+  newPassword: z
+    .string()
+    .min(5, "Password Is Required"),
+  
+  repeatNewPassword: z.string().min(1, "Please repeat your password"),
+}).refine((data) => data.newPassword === data.repeatNewPassword, {
+  message: "Passwords do not match",
+  path: ["repeatNewPassword"],
+});
 
 // تعریف تایپ برای form data
-interface ChangePasswordFormData {
-  newPassword: string;
-  repeatNewPassword: string;
-}
+type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 
 const ChangePasswordPage: React.FC = () => {
-  const [formData, setFormData] = useState<ChangePasswordFormData>({
-    newPassword: "",
-    repeatNewPassword: "",
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showRepeatPassword, setShowRepeatPassword] = useState(false);
+
+  const formik = useFormik<ChangePasswordFormData>({
+    initialValues: {
+      newPassword: "",
+      repeatNewPassword: "",
+    },
+    validate: (values) => {
+      const result = changePasswordSchema.safeParse(values);
+      if (!result.success) {
+        const errors: Record<string, string> = {};
+        result.error.issues.forEach((issue) => {
+          const path = issue.path[0] as string;
+          errors[path] = issue.message;
+        });
+        return errors;
+      }
+      return {};
+    },
+    validateOnBlur: true,
+    validateOnChange: true,
+    onSubmit: (values, { setSubmitting }) => {
+      console.log("Change password data:", values);
+      // منطق تغییر رمز عبور اینجا پیاده‌سازی می‌شود
+      
+      // شبیه‌سازی API call
+      setTimeout(() => {
+        setSubmitting(false);
+        alert("Password changed successfully!");
+        // بعد از تغییر موفق رمز عبور، به صفحه لاگین هدایت شود
+        // navigate("/auth/login");
+      }, 1000);
+    },
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  // متغیرهای کمکی برای نمایش خطاها
+  const hasNewPasswordError = formik.touched.newPassword && Boolean(formik.errors.newPassword);
+  const hasRepeatPasswordError = formik.touched.repeatNewPassword && Boolean(formik.errors.repeatNewPassword);
+
+  const toggleNewPasswordVisibility = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowNewPassword(!showNewPassword);
   };
 
-  const handleConfirm = (e: React.FormEvent): void => {
+  const toggleRepeatPasswordVisibility = (e: React.MouseEvent) => {
     e.preventDefault();
-    // منطق تغییر رمز عبور اینجا پیاده‌سازی می‌شود
-    console.log("Change password data:", formData);
-
-    // بعد از تغییر موفق رمز عبور، به صفحه لاگین هدایت شود
-    // navigate("/auth/login");
+    e.stopPropagation();
+    setShowRepeatPassword(!showRepeatPassword);
   };
 
   return (
     <Card
       sx={{
-        // display: "block",
         maxWidth: "560px",
         width: "100%",
         height: "auto",
@@ -47,7 +88,7 @@ const ChangePasswordPage: React.FC = () => {
         paddingBottom: "32px",
       }}
     >
-      <Box component="form" onSubmit={handleConfirm}>
+      <Box component="form" onSubmit={formik.handleSubmit} noValidate>
         <TypographyLogin
           sx={{
             width: "100%",
@@ -61,7 +102,12 @@ const ChangePasswordPage: React.FC = () => {
         </TypographyLogin>
 
         {/* فیلد New Password */}
-        <Box sx={{ mt: "55px", ml: "38px", mr: "36px" }}>
+        <Box sx={{ 
+          mt: "55px", 
+          ml: "38px", 
+          mr: "36px",
+          mb: hasNewPasswordError ? "39px" : "19px"
+        }}>
           <Typography
             sx={{
               fontWeight: 700,
@@ -73,12 +119,15 @@ const ChangePasswordPage: React.FC = () => {
             New Password:
           </Typography>
           <TextField
-            type="password"
+            type={showNewPassword ? "text" : "password"}
             fullWidth
             name="newPassword"
-            placeholder="Please Enter Your  Password"
-            value={formData.newPassword}
-            onChange={handleInputChange}
+            placeholder="Please Enter Your Password"
+            value={formik.values.newPassword}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={hasNewPasswordError}
+            helperText={hasNewPasswordError && formik.errors.newPassword}
             sx={{
               "& .MuiOutlinedInput-root": {
                 height: "57px",
@@ -88,25 +137,66 @@ const ChangePasswordPage: React.FC = () => {
                 color: "#FFFFFF",
                 backgroundColor: "#242C39",
                 "& fieldset": {
-                  borderColor: "transparent",
+                  borderColor: hasNewPasswordError ? "#f44336" : "transparent",
                 },
                 "&:hover fieldset": {
-                  borderColor: "#1D8D94",
+                  borderColor: hasNewPasswordError ? "#f44336" : "#1D8D94",
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: "#1D8D94",
+                  borderColor: hasNewPasswordError ? "#f44336" : "#1D8D94",
                 },
               },
               "& .MuiInputBase-input::placeholder": {
                 color: "#FFFFFF !important",
                 opacity: 1,
               },
+              "& .MuiFormHelperText-root": {
+                color: "#f44336",
+                marginLeft: 0,
+                marginTop: "8px",
+              },
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment
+                  position="end"
+                  sx={{
+                    position: "absolute",
+                    right: "14px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                  }}
+                >
+                  <Box
+                    onClick={toggleNewPasswordVisibility}
+                    sx={{ cursor: "pointer" }}
+                    aria-label={showNewPassword ? "Hide password" : "Show password"}
+                    component="button"
+                    type="button"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      margin: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <EyeOpenIcon style={{ width: "16px", height: "16px", color: "#FFFFFF" }} />
+                  </Box>
+                </InputAdornment>
+              ),
             }}
           />
         </Box>
 
         {/* فیلد Repeat New Password */}
-        <Box sx={{ mt: "19px", ml: "38px", mr: "36px" }}>
+        <Box sx={{ 
+          ml: "38px", 
+          mr: "36px",
+          mb: hasRepeatPasswordError ? "39px" : "31px"
+        }}>
           <Typography
             sx={{
               fontWeight: 700,
@@ -118,12 +208,15 @@ const ChangePasswordPage: React.FC = () => {
             Repeat New Password:
           </Typography>
           <TextField
-            type="password"
+            type={showRepeatPassword ? "text" : "password"}
             fullWidth
             name="repeatNewPassword"
-            placeholder="Please Repeat Your  Password"
-            value={formData.repeatNewPassword}
-            onChange={handleInputChange}
+            placeholder="Please Repeat Your Password"
+            value={formik.values.repeatNewPassword}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={hasRepeatPasswordError}
+            helperText={hasRepeatPasswordError && formik.errors.repeatNewPassword}
             sx={{
               "& .MuiOutlinedInput-root": {
                 height: "57px",
@@ -133,19 +226,56 @@ const ChangePasswordPage: React.FC = () => {
                 color: "#FFFFFF",
                 backgroundColor: "#242C39",
                 "& fieldset": {
-                  borderColor: "transparent",
+                  borderColor: hasRepeatPasswordError ? "#f44336" : "transparent",
                 },
                 "&:hover fieldset": {
-                  borderColor: "#1D8D94",
+                  borderColor: hasRepeatPasswordError ? "#f44336" : "#1D8D94",
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: "#1D8D94",
+                  borderColor: hasRepeatPasswordError ? "#f44336" : "#1D8D94",
                 },
               },
               "& .MuiInputBase-input::placeholder": {
                 color: "#FFFFFF !important",
                 opacity: 1,
               },
+              "& .MuiFormHelperText-root": {
+                color: "#f44336",
+                marginLeft: 0,
+                marginTop: "8px",
+              },
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment
+                  position="end"
+                  sx={{
+                    position: "absolute",
+                    right: "14px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                  }}
+                >
+                  <Box
+                    onClick={toggleRepeatPasswordVisibility}
+                    sx={{ cursor: "pointer" }}
+                    aria-label={showRepeatPassword ? "Hide password" : "Show password"}
+                    component="button"
+                    type="button"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      margin: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <EyeOpenIcon style={{ width: "16px", height: "16px", color: "#FFFFFF" }} />
+                  </Box>
+                </InputAdornment>
+              ),
             }}
           />
         </Box>
@@ -154,9 +284,9 @@ const ChangePasswordPage: React.FC = () => {
         <Button
           type="submit"
           fullWidth
+          disabled={formik.isSubmitting || !formik.isValid}
           sx={{
-            mt: "31px",
-            backgroundColor: "#1D8D94",
+            backgroundColor: formik.isSubmitting || !formik.isValid ? "#1D8D9480" : "#1D8D94",
             width: "485px",
             height: "60px",
             marginLeft: "39px",
@@ -168,11 +298,15 @@ const ChangePasswordPage: React.FC = () => {
             textTransform: "none",
             boxShadow: "0 4px 8px rgba(29, 141, 148, 0.5)",
             "&:hover": {
-              backgroundColor: "#16666c",
+              backgroundColor: formik.isSubmitting || !formik.isValid ? "#1D8D9480" : "#16666c",
+            },
+            "&.Mui-disabled": {
+              backgroundColor: "#1D8D9480",
+              color: "#FFFFFF80",
             },
           }}
         >
-          Confirm
+          {formik.isSubmitting ? "Changing Password..." : "Confirm"}
         </Button>
       </Box>
     </Card>

@@ -154,7 +154,7 @@ const ForgotPasswordPage: React.FC = () => {
     onChange={formik.handleChange}
     onBlur={formik.handleBlur}
     error={hasEmailError}
-    helperText={hasEmailError && "The email is incorrect"}
+    helperText={hasEmailError && "The Email Entered Is Invalid"}
     sx={{
       // ================================
       // حذف رنگ آبی Autofill مرورگر
@@ -256,7 +256,7 @@ const ForgotPasswordPage: React.FC = () => {
     disableRipple
     disableElevation
     sx={{
-        mt: "15px",
+      mt:hasEmailError ? "46px" : "15px",
         backgroundColor: "#1D8D94",
         width: "485px",
         height: "60px",
