@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useFormik } from "formik";
 import { z } from "zod";
 import {
@@ -23,11 +23,12 @@ import {
   TypographyLogin,
 } from "../components/styled/LoginStyled";
 
+// تعریف اسکیمای Zod
 const emailSchema = z.object({
   email: z
     .string()
     .min(1, "The email is incorrect")
-    .email("The email is incorrect"),
+    .email("The Email Is Incorrect"),
 });
 
 const passwordSchema = z.object({
@@ -46,83 +47,71 @@ type LoginFormData = {
 const LoginCard: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const [showError, setShowError] = React.useState<boolean>(false);
-  const [emailError, setEmailError] = React.useState<string>("");
-  const [passwordError, setPasswordError] = React.useState<string>("");
-  const [emailTouched, setEmailTouched] = React.useState<boolean>(false);
-  const [passwordTouched, setPasswordTouched] = React.useState<boolean>(false);
-  const [showPassword, setShowPassword] = React.useState<boolean>(false);
-
   const { isLoading, error, isAuthenticated } = useSelector(
     (state: RootState) => state.auth
   );
 
-  React.useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/admin/dashboard");
-    }
+  // State مدیریت
+  const [showError, setShowError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
+
+  // هدایت بعد از لاگین موفق
+  useEffect(() => {
+    if (isAuthenticated) navigate("/admin/dashboard");
   }, [isAuthenticated, navigate]);
 
-  React.useEffect(() => {
-    if (error) {
-      setShowError(true);
-    }
+  // نمایش خطای سرور
+  useEffect(() => {
+    if (error) setShowError(true);
   }, [error]);
 
-  const validateEmail = (value: string) => {
+  // اعتبارسنجی با Zod
+  const validateEmail = useCallback((value: string) => {
     const result = emailSchema.safeParse({ email: value });
-    if (!result.success) {
-      return result.error.issues[0]?.message || "The email is incorrect";
-    }
-    return "";
-  };
+    return result.success
+      ? ""
+      : result.error.issues[0]?.message || "The Email Is Incorrect";
+  }, []);
 
-  const validatePassword = (value: string) => {
+  const validatePassword = useCallback((value: string) => {
     const result = passwordSchema.safeParse({ password: value });
-    if (!result.success) {
-      return result.error.issues[0]?.message || "Password is required";
-    }
-    return "";
-  };
+    return result.success
+      ? ""
+      : result.error.issues[0]?.message || "Password Is Required";
+  }, []);
 
+  // فرم با Formik
   const formik = useFormik<LoginFormData>({
-    initialValues: {
-      email: "",
-      password: "",
-      rememberMe: false,
-    },
-    validate: () => {
-      return {};
-    },
+    initialValues: { email: "", password: "", rememberMe: false },
+    validate: () => ({}),
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
       let hasError = false;
-      
+
       if (!values.email.trim()) {
         setEmailTouched(true);
         const emailValidationError = validateEmail(values.email);
         setEmailError(emailValidationError);
         if (emailValidationError) hasError = true;
       }
-      
+
       if (!values.password.trim()) {
         setPasswordTouched(true);
         const passwordValidationError = validatePassword(values.password);
         setPasswordError(passwordValidationError);
         if (passwordValidationError) hasError = true;
       }
-      
-      if (hasError) {
-        return;
-      }
-      
+
+      if (hasError) return;
+
       try {
         await dispatch(
-          loginUser({
-            email: values.email,
-            password: values.password,
-          })
+          loginUser({ email: values.email, password: values.password })
         ).unwrap();
       } catch (error) {
         console.error("Login failed:", error);
@@ -130,112 +119,159 @@ const LoginCard: React.FC = () => {
     },
   });
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    formik.handleChange(e);
-    if (emailTouched) {
-      const error = validateEmail(e.target.value);
-      setEmailError(error);
-    }
-  };
+  // هندلرهای فیلدها
+  const handleEmailChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      formik.handleChange(e);
+      if (emailTouched) setEmailError(validateEmail(e.target.value));
+    },
+    [formik, emailTouched, validateEmail]
+  );
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    formik.handleChange(e);
-    if (passwordTouched) {
-      const error = validatePassword(e.target.value);
-      setPasswordError(error);
-    }
-  };
+  const handlePasswordChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      formik.handleChange(e);
+      if (passwordTouched) setPasswordError(validatePassword(e.target.value));
+    },
+    [formik, passwordTouched, validatePassword]
+  );
 
-  const handleEmailBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (e.target.value.trim() !== "") {
-      setEmailTouched(true);
-      const error = validateEmail(e.target.value);
-      setEmailError(error);
-    }
-    formik.handleBlur(e);
-  };
+  const handleEmailBlur = useCallback(
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      if (e.target.value.trim() !== "") {
+        setEmailTouched(true);
+        setEmailError(validateEmail(e.target.value));
+      }
+      formik.handleBlur(e);
+    },
+    [formik, validateEmail]
+  );
 
-  const handlePasswordBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (e.target.value.trim() !== "") {
-      setPasswordTouched(true);
-      const error = validatePassword(e.target.value);
-      setPasswordError(error);
-    }
-    formik.handleBlur(e);
-  };
+  const handlePasswordBlur = useCallback(
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      if (e.target.value.trim() !== "") {
+        setPasswordTouched(true);
+        setPasswordError(validatePassword(e.target.value));
+      }
+      formik.handleBlur(e);
+    },
+    [formik, validatePassword]
+  );
 
-  const handleCloseError = (): void => {
+  // هندلرهای کلیک
+  const handleCloseError = useCallback(() => {
     setShowError(false);
     dispatch(clearError());
-  };
+  }, [dispatch]);
 
-  const handleClearEmail = (e: React.MouseEvent) => {
+  const handleClearEmail = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      formik.setFieldValue("email", "");
+      setEmailTouched(false);
+      setEmailError("");
+      if (passwordTouched)
+        setPasswordError(validatePassword(formik.values.password));
+    },
+    [formik, passwordTouched, validatePassword]
+  );
+
+  const handleTogglePasswordVisibility = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    formik.setFieldValue("email", "");
-    setEmailTouched(false);
-    setEmailError("");
-    
-    if (passwordTouched) {
-      const error = validatePassword(formik.values.password);
-      setPasswordError(error);
-    }
-  };
+    setShowPassword((prev) => !prev);
+  }, []);
 
-  const handleTogglePasswordVisibility = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setShowPassword(!showPassword);
-  };
+  const handleFormSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      let hasError = false;
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    let hasError = false;
-    
-    if (!formik.values.email.trim()) {
-      setEmailTouched(true);
-      const emailValidationError = validateEmail(formik.values.email);
-      setEmailError(emailValidationError);
-      if (emailValidationError) hasError = true;
-    }
-    
-    if (!formik.values.password.trim()) {
-      setPasswordTouched(true);
-      const passwordValidationError = validatePassword(formik.values.password);
-      setPasswordError(passwordValidationError);
-      if (passwordValidationError) hasError = true;
-    }
-    
-    if (hasError) {
-      return;
-    }
-    
-    dispatch(
-      loginUser({
-        email: formik.values.email,
-        password: formik.values.password,
-      })
-    );
-  };
+      if (!formik.values.email.trim()) {
+        setEmailTouched(true);
+        const emailValidationError = validateEmail(formik.values.email);
+        setEmailError(emailValidationError);
+        if (emailValidationError) hasError = true;
+      }
 
-  const hasEmailError = emailTouched && Boolean(emailError);
-  const hasPasswordError = passwordTouched && Boolean(passwordError);
+      if (!formik.values.password.trim()) {
+        setPasswordTouched(true);
+        const passwordValidationError = validatePassword(
+          formik.values.password
+        );
+        setPasswordError(passwordValidationError);
+        if (passwordValidationError) hasError = true;
+      }
 
-  const getCardHeight = () => {
-    if (hasPasswordError) return "607px";
-    return "568px";
-  };
+      if (hasError) return;
+
+      dispatch(
+        loginUser({
+          email: formik.values.email,
+          password: formik.values.password,
+        })
+      );
+    },
+    [formik, dispatch, validateEmail, validatePassword]
+  );
+
+  // متغیرهای محاسباتی
+  const hasEmailError = useMemo(
+    () => emailTouched && Boolean(emailError),
+    [emailTouched, emailError]
+  );
+  const hasPasswordError = useMemo(
+    () => passwordTouched && Boolean(passwordError),
+    [passwordTouched, passwordError]
+  );
+  const cardHeight = useMemo(
+    () => (hasPasswordError ? "607px" : "568px"),
+    [hasPasswordError]
+  );
+
+  // استایل‌های ثابت
+  const iconButtonStyle = useMemo(
+    () => ({
+      background: "none",
+      border: "none",
+      padding: 0,
+      margin: 0,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }),
+    []
+  );
+
+  const forgotPasswordStyle = useMemo(
+    () => ({
+      marginRight: "36px",
+      color: "#1D8D94",
+      fontSize: "16px",
+      fontWeight: 700,
+      letterSpacing: "0%",
+    }),
+    []
+  );
+
+  const registerLinkStyle = useMemo(
+    () => ({
+      color: "#1D8D94",
+      fontSize: "16px",
+      textDecoration: "none",
+      background: "none",
+      border: "none",
+      padding: 0,
+      font: "inherit",
+      cursor: "pointer",
+      fontWeight: "inherit",
+    }),
+    []
+  );
 
   return (
-    <Box
-      sx={{
-        mt:"157px",
-        height: getCardHeight(),
-        mb:"152px"
-      }}
-    >
+    <Box sx={{ mt: "157px", height: cardHeight, mb: "152px" }}>
       <Snackbar
         open={showError}
         autoHideDuration={6000}
@@ -246,21 +282,22 @@ const LoginCard: React.FC = () => {
           {error}
         </Alert>
       </Snackbar>
+
       <LoginCardContainer>
         <Box component="form" onSubmit={handleFormSubmit} noValidate>
           <TypographyLogin
             sx={{
               width: "100%",
               maxWidth: "91px",
-              marginTop: "32px",
-              marginX: "auto",
+              mt: "32px",
+              mx: "auto",
               display: "block",
             }}
           >
             Login
           </TypographyLogin>
-          <LabelText sx={{ mt: "31px" }}>Email&nbsp;:</LabelText>
 
+          <LabelText sx={{ mt: "31px" }}>Email&nbsp;:</LabelText>
           <FormBox>
             <TextField
               name="email"
@@ -282,6 +319,12 @@ const LoginCard: React.FC = () => {
                   color: "#FFFFFF !important",
                   opacity: 1,
                 },
+                "& .MuiFormHelperText-root": {
+                  textAlign: "right",
+                  marginLeft: 0,
+                  marginTop: "5px",
+                  fontSize: "14px",
+                },
               }}
               InputProps={{
                 endAdornment: hasEmailError && (
@@ -300,15 +343,7 @@ const LoginCard: React.FC = () => {
                       aria-label="Clear email"
                       component="button"
                       type="button"
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        padding: 0,
-                        margin: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
+                      style={iconButtonStyle}
                     >
                       <CloseIcon style={{ width: "20px", height: "20px" }} />
                     </Box>
@@ -321,7 +356,6 @@ const LoginCard: React.FC = () => {
           <LabelText sx={{ mt: hasEmailError ? "47px" : "27px" }}>
             Password&nbsp;:
           </LabelText>
-
           <FormBox>
             <TextField
               name="password"
@@ -337,6 +371,12 @@ const LoginCard: React.FC = () => {
                 "& .MuiInputBase-input::placeholder": {
                   color: "#FFFFFF !important",
                   opacity: 1,
+                },
+                "& .MuiFormHelperText-root": {
+                  textAlign: "right",
+                  marginLeft: 0,
+                  marginTop: "5px",
+                  fontSize: "14px",
                 },
               }}
               InputProps={{
@@ -356,15 +396,7 @@ const LoginCard: React.FC = () => {
                       aria-label="Toggle password visibility"
                       component="button"
                       type="button"
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        padding: 0,
-                        margin: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
+                      style={iconButtonStyle}
                     >
                       <EyeOpenIcon style={{ width: "16px", height: "16px" }} />
                     </Box>
@@ -396,17 +428,7 @@ const LoginCard: React.FC = () => {
               />
               <LabelText sx={{ ml: "6px", mt: 0 }}>Keep Me Login</LabelText>
             </Box>
-
-            <Link
-              to="/auth/forgot-password"
-              style={{
-                marginRight: "36px",
-                color: "#1D8D94",
-                fontSize: "16px",
-                fontWeight: 700,
-                letterSpacing: "0%",
-              }}
-            >
+            <Link to="/auth/forgot-password" style={forgotPasswordStyle}>
               Forgot Your Password?
             </Link>
           </Box>
@@ -417,28 +439,10 @@ const LoginCard: React.FC = () => {
 
           <Typography
             align="center"
-            sx={{
-              mt: "27px",
-              mb: "48px",
-              color: "#ABABAB",
-              fontWeight: 700,
-            }}
+            sx={{ mt: "27px", mb: "48px", color: "#ABABAB", fontWeight: 700 }}
           >
             Dont Have An Account? &nbsp;
-            <Link
-              to="/auth/register"
-              style={{
-                color: "#1D8D94",
-                fontSize: "16px",
-                textDecoration: "none",
-                background: "none",
-                border: "none",
-                padding: 0,
-                font: "inherit",
-                cursor: "pointer",
-                fontWeight: "inherit",
-              }}
-            >
+            <Link to="/auth/register" style={registerLinkStyle}>
               Register
             </Link>
           </Typography>
@@ -447,4 +451,5 @@ const LoginCard: React.FC = () => {
     </Box>
   );
 };
+
 export default LoginCard;

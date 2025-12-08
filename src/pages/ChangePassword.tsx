@@ -6,7 +6,6 @@ import { Box, Card, TextField, Button, Typography, InputAdornment } from "@mui/m
 import { TypographyLogin } from "../components/styled/LoginStyled";
 import EyeOpenIcon from "../assets/images/passwordicon/Frame (3).svg?react";
 
-// تعریف schema با Zod
 const changePasswordSchema = z.object({
   newPassword: z
     .string()
@@ -18,7 +17,6 @@ const changePasswordSchema = z.object({
   path: ["repeatNewPassword"],
 });
 
-// تعریف تایپ برای form data
 type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 
 const ChangePasswordPage: React.FC = () => {
@@ -46,19 +44,14 @@ const ChangePasswordPage: React.FC = () => {
     validateOnChange: true,
     onSubmit: (values, { setSubmitting }) => {
       console.log("Change password data:", values);
-      // منطق تغییر رمز عبور اینجا پیاده‌سازی می‌شود
       
-      // شبیه‌سازی API call
       setTimeout(() => {
         setSubmitting(false);
         alert("Password changed successfully!");
-        // بعد از تغییر موفق رمز عبور، به صفحه لاگین هدایت شود
-        // navigate("/auth/login");
       }, 1000);
     },
   });
 
-  // متغیرهای کمکی برای نمایش خطاها
   const hasNewPasswordError = formik.touched.newPassword && Boolean(formik.errors.newPassword);
   const hasRepeatPasswordError = formik.touched.repeatNewPassword && Boolean(formik.errors.repeatNewPassword);
 
@@ -101,7 +94,6 @@ const ChangePasswordPage: React.FC = () => {
           Change Password
         </TypographyLogin>
 
-        {/* فیلد New Password */}
         <Box sx={{ 
           mt: "55px", 
           ml: "38px", 
@@ -190,8 +182,6 @@ const ChangePasswordPage: React.FC = () => {
             }}
           />
         </Box>
-
-        {/* فیلد Repeat New Password */}
         <Box sx={{ 
           ml: "38px", 
           mr: "36px",
@@ -279,8 +269,6 @@ const ChangePasswordPage: React.FC = () => {
             }}
           />
         </Box>
-
-        {/* دکمه Confirm */}
         <Button
           type="submit"
           fullWidth
