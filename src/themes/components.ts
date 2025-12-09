@@ -128,18 +128,4 @@ export const components: Components<Theme> = {
     ],
   },
 
-  MuiLink: {
-    styleOverrides: {
-      root: {
-        color: "#1D8D94",
-        fontSize: "16px",
-        fontWeight: 700,
-        cursor: "pointer",
-        textDecoration: "none",
-        "&:hover": {
-          textDecoration: "underline",
-        },
-      },
-    },
-  },
 };

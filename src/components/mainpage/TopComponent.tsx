@@ -38,7 +38,7 @@ function TopComponent() {
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Stepper 
-            activeStep={-1} // تغییر این خط: -1 یعنی هیچ مرحله‌ای فعال نیست
+            activeStep={-1} 
             connector={<CustomConnector />}
           >
             {steps.map((step) => {

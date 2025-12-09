@@ -5,6 +5,7 @@ export const darkTheme = createTheme({
   typography: {
     fontFamily: "Niramit, sans-serif",
     fontWeightBold: 700,
+    fontSize: "16px",
   },
 
   components: {

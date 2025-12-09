@@ -9,6 +9,5 @@ export const store = configureStore({
   },
 });
 
-// تعریف تایپ‌ها به صورت ساده
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
