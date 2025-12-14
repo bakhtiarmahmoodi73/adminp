@@ -1,14 +1,10 @@
+import React from 'react';
 import MainComponent from "../components/mainpage/MainComponent"
-import TopComponent from "../components/mainpage/TopComponent"
 
-function HomePage() {
+const HomePage: React.FC = () => {
   return (
-        <>
-    
-        <TopComponent />
-        <MainComponent />
-    </>
+    <MainComponent />
   )
 }
 
-export default HomePage
+export default HomePage;

@@ -1,4 +1,5 @@
-import React from "react";
+// components/mainpage/MainComponent.tsx
+import React, { ChangeEvent } from "react";
 import {
   ButtonMain,
   CardMainBottm,
@@ -13,49 +14,115 @@ import {
   MenuItem,
   Box,
   Typography,
+  SelectChangeEvent,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../store/hooks/redux";
+import {
+  setFromCurrency,
+  setToCurrency,
+  setFromAmount,
+  setToAmount,
+  swapCurrencies,
+  setStep,
+  setExchangeFormData,
+} from "../../store/slices/exchangeSlice";
 
 import Tether from "../../assets/images/tether/tether (2) 1.svg?react";
 import Permoney from "../../assets/images/perfectmoney/Group 5.svg?react";
 import Change from "../../assets/images/changebutton/Group 4 (2).svg?react";
 
-function MainComponent() {
-  // state برای مدیریت swap
-  const [isSwapped, setIsSwapped] = React.useState(false);
-  
-  // state برای مقادیر کارت‌ها
-  const [topValue, setTopValue] = React.useState("tether");
-  const [bottomValue, setBottomValue] = React.useState("permoney");
-  const [topAmount, setTopAmount] = React.useState("");
-  const [bottomAmount, setBottomAmount] = React.useState("");
+const MainComponent: React.FC = () => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  // تابع برای جابجا کردن همه چیز
+  // خواندن state از Redux
+  const { fromCurrency, toCurrency, fromAmount, toAmount } = useAppSelector(
+    (state) => state.exchange
+  );
+
+  // تابع برای جابجا کردن ارزها
   const handleSwap = () => {
-    setIsSwapped(!isSwapped);
-    
-    // جابجا کردن مقادیر
-    const tempValue = topValue;
-    setTopValue(bottomValue);
-    setBottomValue(tempValue);
-    
-    const tempAmount = topAmount;
-    setTopAmount(bottomAmount);
-    setBottomAmount(tempAmount);
+    dispatch(swapCurrencies());
   };
 
-  // انتخاب کامپوننت‌ها بر اساس وضعیت swap
-  const TopCard = isSwapped ? CardMainBottm : CardMainTop;
-  const BottomCard = isSwapped ? CardMainTop : CardMainBottm;
+  // تابع برای تغییر مقدار From
+  const handleFromAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // فقط اعداد و نقطه اعشار مجاز هستند
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+      dispatch(setFromAmount(value));
+
+      // محاسبه خودکار مبلغ مقصد (نرخ فرضی)
+      if (value) {
+        const exchangeRate = 1; // نرخ واقعی را از API دریافت کنید
+        const calculatedAmount = (parseFloat(value) * exchangeRate).toFixed(2);
+        dispatch(setToAmount(calculatedAmount.toString()));
+      } else {
+        dispatch(setToAmount(""));
+      }
+    }
+  };
+
+  // تابع برای تغییر مقدار To
+  const handleToAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // فقط اعداد و نقطه اعشار مجاز هستند
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+      dispatch(setToAmount(value));
+    }
+  };
+
+  // تابع برای تغییر ارز From
+  const handleFromCurrencyChange = (e: SelectChangeEvent<string>) => {
+    dispatch(setFromCurrency(e.target.value));
+  };
+
+  // تابع برای تغییر ارز To
+  const handleToCurrencyChange = (e: SelectChangeEvent<string>) => {
+    dispatch(setToCurrency(e.target.value));
+  };
+
+  // تابع برای رفتن به صفحه Confirm
+  const handleMakeExchange = () => {
+    // اعتبارسنجی اولیه
+    if (!fromAmount || parseFloat(fromAmount) < 100) {
+      alert("Please enter a valid amount (minimum $100)");
+      return;
+    }
+
+    if (parseFloat(fromAmount) > 4832) {
+      alert("Maximum amount is $4832");
+      return;
+    }
+
+    // ذخیره اطلاعات فرم در Redux
+    dispatch(setExchangeFormData({
+      fromCurrency,
+      toCurrency,
+      fromAmount,
+      toAmount,
+    }));
+
+    // تغییر step به 2 (Confirm)
+    dispatch(setStep(2));
+
+    // هدایت به صفحه تأیید
+    navigate("/confirm");
+  };
 
   return (
     <Box sx={{ position: "relative", width: "100%" }}>
-      {/* کارت بالا */}
-      <TopCard>
-        <TypographyMain>{isSwapped ? "To" : "From"}&nbsp;:</TypographyMain>
+      {/* کارت بالا (From) */}
+      <CardMainTop>
+        <TypographyMain>From:</TypographyMain>
         <TextFieldMainTop
-          value={topAmount}
-          onChange={(e) => setTopAmount(e.target.value)}
+          value={fromAmount}
+          onChange={handleFromAmountChange}
           placeholder="1000"
+          autoComplete="off"
+          type="text"
+          inputMode="numeric"
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -69,8 +136,8 @@ function MainComponent() {
                     }}
                   />
                   <Select
-                    value={topValue}
-                    onChange={(e) => setTopValue(e.target.value)}
+                    value={fromCurrency}
+                    onChange={handleFromCurrencyChange}
                     variant="standard"
                     disableUnderline
                     sx={{
@@ -99,11 +166,21 @@ function MainComponent() {
               </InputAdornment>
             ),
           }}
+          sx={{
+            "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+              {
+                "-webkit-appearance": "none",
+                margin: 0,
+              },
+            "& input[type=number]": {
+              "-moz-appearance": "textfield",
+            },
+          }}
         />
         <TypographyMain sx={{ mt: "14px" }}>
           Min : $100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Max: $4832
         </TypographyMain>
-      </TopCard>
+      </CardMainTop>
 
       {/* دکمه تغییر */}
       <Box
@@ -118,13 +195,16 @@ function MainComponent() {
         </ChangeButtonComponent>
       </Box>
 
-      {/* کارت پایین */}
-      <BottomCard>
-        <TypographyMain>{isSwapped ? "From" : "To"}&nbsp;:</TypographyMain>
+      {/* کارت پایین (To) */}
+      <CardMainBottm>
+        <TypographyMain>To:</TypographyMain>
         <TextFieldMainTop
-          value={bottomAmount}
-          onChange={(e) => setBottomAmount(e.target.value)}
+          value={toAmount}
+          onChange={handleToAmountChange}
           placeholder="1000"
+          autoComplete="off"
+          type="text"
+          inputMode="numeric"
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -138,8 +218,8 @@ function MainComponent() {
                     }}
                   />
                   <Select
-                    value={bottomValue}
-                    onChange={(e) => setBottomValue(e.target.value)}
+                    value={toCurrency}
+                    onChange={handleToCurrencyChange}
                     variant="standard"
                     disableUnderline
                     sx={{
@@ -168,15 +248,25 @@ function MainComponent() {
               </InputAdornment>
             ),
           }}
+          sx={{
+            "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+              {
+                "-webkit-appearance": "none",
+                margin: 0,
+              },
+            "& input[type=number]": {
+              "-moz-appearance": "textfield",
+            },
+          }}
         />
         <TypographyMain sx={{ mt: "14px" }}>
           Min : $100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Max: $4832
         </TypographyMain>
-      </BottomCard>
+      </CardMainBottm>
 
-      <ButtonMain>Make Exchange</ButtonMain>
+      <ButtonMain onClick={handleMakeExchange}>Make Exchange</ButtonMain>
     </Box>
   );
-}
+};
 
 export default MainComponent;

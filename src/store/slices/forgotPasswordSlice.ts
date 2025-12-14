@@ -1,11 +1,11 @@
+// store/slices/forgotPasswordSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-// حذف export از interface و استفاده از type
-type ForgotPasswordState = {
+export interface ForgotPasswordState {
   isLoading: boolean;
   error: string | null;
   success: boolean;
-};
+}
 
 const initialState: ForgotPasswordState = {
   isLoading: false,
@@ -14,20 +14,30 @@ const initialState: ForgotPasswordState = {
 };
 
 export const sendResetPasswordEmail = createAsyncThunk(
-  'forgotPassword/sendEmail',
+  'forgotPassword/sendResetPasswordEmail',
   async (email: string) => {
-    // شبیه‌سازی API call برای ارسال ایمیل بازیابی
-    const response = await new Promise<{ success: boolean }>((resolve, reject) => {
-      setTimeout(() => {
-        if (email && email.includes('@')) {
-          resolve({ success: true });
-        } else {
-          reject(new Error('Invalid email address'));
-        }
-      }, 1000);
-    });
+    // شبیه‌سازی API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
-    return response;
+    // در اینجا باید API واقعی را فراخوانی کنید
+    // const response = await fetch('/api/auth/forgot-password', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ email }),
+    // });
+    
+    // if (!response.ok) {
+    //   throw new Error('Failed to send reset password email');
+    // }
+    
+    // return await response.json();
+    
+    // برای نمونه:
+    if (email.includes('@')) {
+      return { success: true, message: 'Email sent successfully' };
+    } else {
+      throw new Error('Invalid email address');
+    }
   }
 );
 
@@ -38,11 +48,7 @@ const forgotPasswordSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    resetState: (state) => {
-      state.isLoading = false;
-      state.error = null;
-      state.success = false;
-    },
+    resetState: () => initialState,
   },
   extraReducers: (builder) => {
     builder
@@ -57,7 +63,7 @@ const forgotPasswordSlice = createSlice({
       })
       .addCase(sendResetPasswordEmail.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.error.message || 'Failed to send reset email';
+        state.error = action.error.message || 'Something went wrong';
       });
   },
 });
