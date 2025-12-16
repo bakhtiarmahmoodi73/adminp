@@ -12,6 +12,9 @@ import FlowSendPage from "./pages/FlowSendPage";
 import FlowReceivePage from "./pages/FlowReceivePage";
 import SendSuccessPage from "./pages/SendSuccessPage";
 import SendFailedPage from "./pages/SendFailedPage";
+import WaitingPage from "./pages/WaitingPage";
+import PmSuccessPage from "./pages/PmsuccessPage";
+import PmFailedPage from "./pages/PmFailedPage";
 
 function App() {
   return (
@@ -32,10 +35,14 @@ function App() {
       {/* ExchangeLayout (با استپر) */}
       <Route element={<ExchangeLayout />}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/confirm" element={<ConfirmPageWithEmail />} /> {/* فقط این */}
-           <Route path="/flow/send" element={<FlowSendPage />} />
-                      <Route path="/success" element={<SendSuccessPage />} />
-                      <Route path="/failed" element={<SendFailedPage />} />
+        <Route path="/confirm" element={<ConfirmPageWithEmail />} />{" "}
+        {/* فقط این */}
+        <Route path="/flow/send" element={<FlowSendPage />} />
+        <Route path="/success" element={<SendSuccessPage />} />
+        <Route path="/failed" element={<SendFailedPage />} />
+        <Route path="/waiting" element={<WaitingPage />} />
+        <Route path="/pmsuccess" element={<PmSuccessPage />} />
+                <Route path="/pmfailed" element={<PmFailedPage />} />
 
         <Route path="/flow/receive" element={<FlowReceivePage />} />
       </Route>

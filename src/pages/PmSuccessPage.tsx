@@ -3,8 +3,8 @@ import {
   BoxConfirmDetail,
   BoxConfirmRoot,
   BoxDetail,
-  ButtonFailed,
   ContainerConfirm,
+  TextFieldSuccess,
   TypographyConfirm,
   TypographyDetail,
   TypographySuccess,
@@ -14,8 +14,9 @@ import { RootState } from "../store";
 import Tether from "../assets/images/tether/tether (2) 1.svg?react";
 import PerMoney from "../assets/images/perfectmoney/Group 5.svg?react";
 import Line from "../assets/images/lines/Line 10.svg?react";
-import Close from "../assets/images/CloseFailed/Frame (12).svg?react";
-function SendFailedPage() {
+import Tik from "../assets/images/success/Frame (11).svg?react";
+
+function PmSuccessPage() {
   const exchangeState = useAppSelector((state: RootState) => state.exchange);
 
   const getSendIcon = () => {
@@ -65,7 +66,7 @@ function SendFailedPage() {
   return (
     <ContainerConfirm
       sx={{
-        height: "684px",
+        height: "864px",
       }}
     >
       <BoxConfirmRoot>
@@ -107,35 +108,53 @@ function SendFailedPage() {
             gap: "21.12px",
           }}
         >
-          <Close />
-          <TypographySuccess sx={{ color: " #F66066" }}>
-            Your Payment Time Has Expired !
-          </TypographySuccess>
+          <Tik />
+          <TypographySuccess>Payment Success !</TypographySuccess>
+        </BoxDetail>
+        <TypographyDetail sx={{ marginTop: "28px", fontSize: "19.5px" }}>
+          The Transaction Was Successfully Completed And The Amount Of 100
+          Tether Was Deposited To This Address
+        </TypographyDetail>
+        <BoxDetail
+          sx={{
+            marginTop: "30px",
+            alignItems: "center",
+            gap:"79px"
+          }}
+        >
+          <TypographyDetail sx={{fontSize:'20px'}}>E- voucher :</TypographyDetail>
+          <TextFieldSuccess sx={{ marginTop: 0,marginLeft:0 }} placeholder="2326564925" />
         </BoxDetail>
         <BoxDetail
           sx={{
-            marginTop: "29px",
-            marginX: "auto",
-           
+            marginTop: "18px",
+            alignItems: "center",
           }}
         >
-          <TypographySuccess sx={{color:"#ABABAB",fontSize:"20px"}}>
-            Please Complete The Payment Process Again{" "}
-          </TypographySuccess>
+          <TypographyDetail>activation code :</TypographyDetail>
+          <TextFieldSuccess sx={{ marginTop: 0,marginLeft:0 }} placeholder="9012037427092330" />
         </BoxDetail>
-
-      <BoxDetail
+        <BoxDetail
           sx={{
-            marginTop: "30px",
-            marginX: "auto",
-           
+            marginTop: "18px",
+            alignItems: "center",
           }}
         >
-        <ButtonFailed>Try Again</ButtonFailed>
+          <TypographyDetail>Amount :</TypographyDetail>
+          <TextFieldSuccess sx={{ marginTop: 0,marginLeft:0 }} placeholder="100 USDT" />
+        </BoxDetail>
+          <BoxDetail
+          sx={{
+            marginTop: "18px",
+            alignItems: "center",
+          }}
+        >
+          <TypographyDetail>Time & Date :</TypographyDetail>
+          <TextFieldSuccess sx={{ marginTop: 0,marginLeft:0,letterSpacing:"25%" }} placeholder="25-02-2023, 13:22:16" />
         </BoxDetail>
       </BoxConfirmRoot>
     </ContainerConfirm>
   );
 }
 
-export default SendFailedPage;
+export default PmSuccessPage;

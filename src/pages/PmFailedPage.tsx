@@ -15,7 +15,7 @@ import Tether from "../assets/images/tether/tether (2) 1.svg?react";
 import PerMoney from "../assets/images/perfectmoney/Group 5.svg?react";
 import Line from "../assets/images/lines/Line 10.svg?react";
 import Close from "../assets/images/CloseFailed/Frame (12).svg?react";
-function SendFailedPage() {
+function PmFailedPage() {
   const exchangeState = useAppSelector((state: RootState) => state.exchange);
 
   const getSendIcon = () => {
@@ -138,4 +138,4 @@ function SendFailedPage() {
   );
 }
 
-export default SendFailedPage;
+export default PmFailedPage;

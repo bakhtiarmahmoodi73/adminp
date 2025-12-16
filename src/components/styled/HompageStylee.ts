@@ -285,7 +285,151 @@ export const BoxQrDetail = styled(Box)({
 });
 export const PicQr = styled("div")({
   // backgroundColor: "#ABABAB",
-  width:"191px",
-  height:"191px"
+  width: "191px",
+  height: "191px",
+});
+export const TypographySuccess = styled(Typography)({
+  fontSize: "32px",
+  fontWeight: 700,
+  color: "#40A578",
 });
 
+export const TextFieldSuccess = styled(TextField)({
+  backgroundColor: "#242C39",
+  borderRadius: "10px",
+  height: "57px",
+  width: "791px",
+  marginTop: "22px",
+  marginLeft: "39px",
+
+  "& .MuiOutlinedInput-root": {
+    paddingRight: 0,
+    paddingLeft: 0,
+    height: "57px",
+    borderRadius: "10px",
+    color: "#FFFFFF",
+    fontSize: "16px",
+    fontWeight: 700,
+    letterSpacing: "0.25em",
+  },
+
+  "& input": {
+    textAlign: "left",
+    paddingLeft: "20px",
+    color: "#FFFFFF",
+  },
+  "& input::placeholder": {
+    color: "#FFFFFF",
+    opacity: 1,
+    letterSpacing: "0.25em",
+  },
+});
+
+export const ButtonFailed = styled(Button)({
+  display: "block",
+  backgroundColor: "#1D8D94",
+  width: "173px",
+  height: "68px",
+  marginLeft: "auto",
+  marginRight: "auto",
+  borderRadius: "10px",
+  fontSize: "20px",
+  fontWeight: 700,
+  color: "#FFFFFF",
+  textTransform: "none",
+  boxShadow: "0 4px 8px rgba(29, 141, 148, 0.5)",
+  // "&:hover": {
+  //   backgroundColor: "#16666c",
+  // },
+});
+
+export const TextFieldReceive = styled(TextField)({
+  backgroundColor: "#242C39",
+  borderRadius: "10px",
+  height: "57px",
+  width: "983px",
+  marginTop: "12px",
+  marginLeft: "0",
+
+  "& .MuiOutlinedInput-root": {
+    paddingRight: 0,
+    paddingLeft: 0,
+    height: "57px",
+    borderRadius: "10px",
+    color: "#FFFFFF",
+    fontSize: "14",
+    fontWeight: 700,
+  },
+
+  "& input": {
+    textAlign: "left",
+    paddingLeft: "20px",
+    color: "#FFFFFF",
+  },
+  "& input::placeholder": {
+    color: "#FFFFFF",
+    opacity: 1,
+  },
+});
+
+export const ButtonRecieve = styled(Button)({
+  display: "block",
+  backgroundColor: "#1D8D94",
+  width: "560px",
+  height: "60",
+  marginLeft: "auto",
+  marginRight: "auto",
+  borderRadius: "10px",
+  marginTop: "42px",
+  fontSize: "16px",
+  fontWeight: 700,
+  color: "#FFFFFF",
+  textTransform: "none",
+  boxShadow: "0 4px 8px rgba(29, 141, 148, 0.5)",
+});
+
+export const TypographyWaiting = styled(Typography)({
+  fontSize: "32px",
+  fontWeight: 700,
+  color: "#FFAF00",
+});
+// components/styled/HompageStylee.tsx
+
+// کانتینر برای دکمه‌ها
+export const ButtonContainer = styled(Box)({
+  display: "flex",
+  justifyContent: "center",
+  gap: "16px",
+  marginTop: "32px",
+  paddingBottom: "20px"
+});
+
+// دکمه Success
+export const ButtonSuccess = styled(Button)({
+  minWidth: "120px",
+  height: "40px",
+  backgroundColor: "#40A578",
+  color: "#FFFFFF",
+  fontSize: "14px",
+  fontWeight: 700,
+  borderRadius: "8px",
+  textTransform: "uppercase",
+  "&:hover": {
+    backgroundColor: "#359768",
+  }
+});
+
+// دکمه Failed
+export const ButtonFailedpm = styled(Button)({
+  minWidth: "120px",
+  height: "40px",
+  backgroundColor: "#FF4757",
+  color: "#FFFFFF",
+  fontSize: "14px",
+  fontWeight: 700,
+  borderRadius: "8px",
+  textTransform: "uppercase",
+  "&:hover": {
+    backgroundColor: "#FF3742",
+  }
+});
