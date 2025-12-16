@@ -13,8 +13,8 @@ import FlowReceivePage from "./pages/FlowReceivePage";
 import SendSuccessPage from "./pages/SendSuccessPage";
 import SendFailedPage from "./pages/SendFailedPage";
 import WaitingPage from "./pages/WaitingPage";
-import PmSuccessPage from "./pages/PmsuccessPage";
 import PmFailedPage from "./pages/PmFailedPage";
+import PmSuccessPage from "./pages/PmSuccessPage";
 
 function App() {
   return (
