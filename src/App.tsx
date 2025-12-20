@@ -15,6 +15,9 @@ import SendFailedPage from "./pages/SendFailedPage";
 import WaitingPage from "./pages/WaitingPage";
 import PmFailedPage from "./pages/PmFailedPage";
 import PmSuccessPage from "./pages/PmSuccessPage";
+import ContactUs from "./pages/ContactUs";
+import AboutUs from "./pages/AboutUs";
+import Faq from "./pages/Faq";
 
 function App() {
   return (
@@ -26,10 +29,10 @@ function App() {
         <Route path="/auth/register" element={<RegisterPage />} />
         <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/auth/change-password" element={<ChangePasswordPage />} />
-        <Route path="/about" element={<div>About Page</div>} />
-        <Route path="/contact" element={<div>Contact Page</div>} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/contact" element={<ContactUs />} />
         <Route path="/blog" element={<div>Blog Page</div>} />
-        <Route path="/faq" element={<div>FAQ Page</div>} />
+        <Route path="/faq" element={<Faq/>} />
       </Route>
 
       {/* ExchangeLayout (با استپر) */}

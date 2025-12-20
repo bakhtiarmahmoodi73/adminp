@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store/hooks/redux';
-import { setStep } from '../store/slices/exchangeSlice';
+import { setStep, setExchangeFormData } from '../store/slices/exchangeSlice';
 
 import {
   BoxCircle,
@@ -38,12 +38,60 @@ function ConfirmPageWithEmail() {
   const exchangeState = useAppSelector((state: RootState) => state.exchange);
   
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [isHydrated, setIsHydrated] = useState<boolean>(false);
   
   // تعیین اینکه آیا باید فیلد ایمیل نمایش داده شود
   const shouldShowEmailField = !(isAuthenticated && user?.email);
   
   // تعیین height بر اساس وضعیت
   const containerHeight = shouldShowEmailField ? "909px" : "819px";
+
+  // تابع ذخیره داده‌ها در localStorage
+  const saveToLocalStorage = () => {
+    const storageData = {
+      fromCurrency: exchangeState.fromCurrency,
+      toCurrency: exchangeState.toCurrency,
+      fromAmount: exchangeState.fromAmount,
+      toAmount: exchangeState.toAmount,
+      email: user?.email || formik.values.email,
+      timestamp: new Date().getTime()
+    };
+    localStorage.setItem('exchangeData', JSON.stringify(storageData));
+  };
+
+  // تابع بازیابی داده‌ها از localStorage
+  const loadFromLocalStorage = () => {
+    const savedData = localStorage.getItem('exchangeData');
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        // اگر داده‌ها کمتر از 10 دقیقه پیش ذخیره شده‌اند، استفاده کن
+        const isRecent = new Date().getTime() - parsedData.timestamp < 10 * 60 * 1000;
+        if (isRecent && parsedData.fromAmount) {
+          // اگر کاربر لاگین شده و ایمیل متفاوت است، ایمیل را از localStorage استفاده نکن
+          const emailToUse = isAuthenticated && user?.email ? user.email : parsedData.email;
+          
+          dispatch(setExchangeFormData({
+            fromCurrency: parsedData.fromCurrency,
+            toCurrency: parsedData.toCurrency,
+            fromAmount: parsedData.fromAmount,
+            toAmount: parsedData.toAmount
+          }));
+          
+          if (!isAuthenticated || !user?.email) {
+            formik.setFieldValue('email', parsedData.email || '');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading from localStorage:', error);
+      }
+    }
+  };
+
+  // تابع پاک کردن داده‌های localStorage
+  const clearLocalStorage = () => {
+    localStorage.removeItem('exchangeData');
+  };
 
   // تابع اعتبارسنجی با Zod
   const validateForm = (values: ConfirmFormData) => {
@@ -92,15 +140,18 @@ function ConfirmPageWithEmail() {
 
         console.log('Submitting form data:', formData);
         
+        // ذخیره داده‌ها قبل از ارسال
+        saveToLocalStorage();
+        
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         // تعیین به کدام صفحه هدایت شود بر اساس نوع exchange
         if (exchangeState.fromCurrency === 'tether' && exchangeState.toCurrency === 'permoney') {
           // تتر به پرفکت مانی -> نمایش فلو send
-          navigate('/flow/send'); // باید این route را در App.tsx تعریف کنید
+          navigate('/flow/send');
         } else if (exchangeState.fromCurrency === 'permoney' && exchangeState.toCurrency === 'tether') {
           // پرفکت مانی به تتر -> نمایش فلو receive
-          navigate('/flow/receive'); // باید این route را در App.tsx تعریف کنید
+          navigate('/flow/receive');
         } else {
           // حالت پیش‌فرض
           navigate('/complete');
@@ -108,6 +159,9 @@ function ConfirmPageWithEmail() {
         
         // تغییر step به 3 (Complete)
         dispatch(setStep(3));
+        
+        // پاک کردن localStorage پس از ارسال موفق
+        clearLocalStorage();
         
         setShowSuccess(true);
         
@@ -149,6 +203,32 @@ function ConfirmPageWithEmail() {
   };
 
   useEffect(() => {
+    // بارگذاری داده‌ها از localStorage
+    loadFromLocalStorage();
+    setIsHydrated(true);
+    
+    // ذخیره داده‌ها در localStorage هر بار که exchangeState تغییر می‌کند
+    const saveData = () => {
+      if (exchangeState.fromAmount || exchangeState.toAmount) {
+        saveToLocalStorage();
+      }
+    };
+    
+    saveData();
+    
+    // ذخیره داده‌ها هنگام بسته شدن صفحه
+    const handleBeforeUnload = () => {
+      saveToLocalStorage();
+    };
+    
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [exchangeState]);
+
+  useEffect(() => {
     if (isAuthenticated && user?.email) {
       formik.setFieldValue('email', user.email);
     }
@@ -186,6 +266,15 @@ function ConfirmPageWithEmail() {
       return "Perfect Money";
     }
   };
+
+  // اگر هنوز داده‌ها بارگذاری نشده، اسکلت نشان بده
+  if (!isHydrated) {
+    return (
+      <ContainerConfirm sx={{ height: containerHeight }}>
+        <div>Loading...</div>
+      </ContainerConfirm>
+    );
+  }
 
   return (
     <ContainerConfirm sx={{ height: containerHeight }}>

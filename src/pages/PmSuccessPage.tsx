@@ -1,4 +1,5 @@
-import React from "react";
+import  { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   BoxConfirmDetail,
   BoxConfirmRoot,
@@ -9,18 +10,100 @@ import {
   TypographyDetail,
   TypographySuccess,
 } from "../components/styled/HompageStylee";
-import { useAppSelector } from "../store/hooks/redux";
-import { RootState } from "../store";
 import Tether from "../assets/images/tether/tether (2) 1.svg?react";
 import PerMoney from "../assets/images/perfectmoney/Group 5.svg?react";
 import Line from "../assets/images/lines/Line 10.svg?react";
 import Tik from "../assets/images/success/Frame (11).svg?react";
 
 function PmSuccessPage() {
-  const exchangeState = useAppSelector((state: RootState) => state.exchange);
+  const location = useLocation();
+  const [isHydrated, setIsHydrated] = useState<boolean>(false);
+  const [displayData, setDisplayData] = useState({
+    fromAmount: "100",
+    fromCurrency: "tether",
+    toAmount: "120",
+    toCurrency: "permoney"
+  });
+
+  // تابع بارگذاری داده‌ها از localStorage
+  const loadFromLocalStorage = () => {
+    try {
+      // اول از location.state چک کن
+      if (location.state?.transactionData) {
+        console.log('🎯 Using data from location state:', location.state.transactionData);
+        
+        const transactionData = location.state.transactionData;
+        setDisplayData({
+          fromAmount: transactionData.fromAmount || "100",
+          fromCurrency: transactionData.fromCurrency || "tether",
+          toAmount: transactionData.toAmount || "120",
+          toCurrency: transactionData.toCurrency || "permoney"
+        });
+        return true;
+      }
+      
+      // اگر location.state نبود، از localStorage بارگذاری کن
+      const savedData = localStorage.getItem('lastExchangeData');
+      console.log('🔍 Checking localStorage for lastExchangeData');
+      
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        
+        if (parsedData.fromAmount) {
+          console.log('🔄 Loading from localStorage:', parsedData);
+          setDisplayData({
+            fromAmount: parsedData.fromAmount || "100",
+            fromCurrency: parsedData.fromCurrency || "tether",
+            toAmount: parsedData.toAmount || "120",
+            toCurrency: parsedData.toCurrency || "permoney"
+          });
+          return true;
+        }
+      }
+      
+      // سایر کلیدها
+      const backupKeys = ['exchangeData', 'exchangeWaitingData', 'currentTransaction'];
+      
+      for (const key of backupKeys) {
+        const backupData = localStorage.getItem(key);
+        if (backupData) {
+          const parsedData = JSON.parse(backupData);
+          if (parsedData.fromAmount) {
+            console.log(`🔁 Loading from backup key ${key}:`, parsedData);
+            setDisplayData({
+              fromAmount: parsedData.fromAmount || "100",
+              fromCurrency: parsedData.fromCurrency || "tether",
+              toAmount: parsedData.toAmount || "120",
+              toCurrency: parsedData.toCurrency || "permoney"
+            });
+            return true;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error loading from localStorage:', error);
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    console.log('🚀 PmSuccessPage mounted');
+    console.log('📍 Location state:', location.state);
+    
+    const dataLoaded = loadFromLocalStorage();
+    
+    if (!dataLoaded) {
+      console.log('⚠️ Using default data in PmSuccessPage');
+    }
+    
+    setIsHydrated(true);
+    
+    // ذخیره stepper status
+    localStorage.setItem("stepperStatus", "complete");
+  }, [location.state]);
 
   const getSendIcon = () => {
-    if (exchangeState.fromCurrency === "tether") {
+    if (displayData.fromCurrency === "tether") {
       return <Tether />;
     } else {
       return <PerMoney />;
@@ -28,7 +111,7 @@ function PmSuccessPage() {
   };
 
   const getSendCurrencyText = () => {
-    if (exchangeState.fromCurrency === "tether") {
+    if (displayData.fromCurrency === "tether") {
       return "USDT";
     } else {
       return "Perfect Money";
@@ -36,7 +119,7 @@ function PmSuccessPage() {
   };
 
   const getReceiveIcon = () => {
-    if (exchangeState.toCurrency === "tether") {
+    if (displayData.toCurrency === "tether") {
       return <Tether />;
     } else {
       return <PerMoney />;
@@ -44,31 +127,24 @@ function PmSuccessPage() {
   };
 
   const getReceiveCurrencyText = () => {
-    if (exchangeState.toCurrency === "tether") {
+    if (displayData.toCurrency === "tether") {
       return "USDT";
     } else {
       return "Perfect Money";
     }
   };
 
-  // این تابع stepper را به مرحله complete برمی‌گرداند
-  const setStepperToComplete = () => {
-    // اگر stepper state global دارید، آن را update کنید
-    // یا از context/Redux استفاده کنید
-    localStorage.setItem("stepperStatus", "complete");
-  };
-
-  // هنگام لود صفحه، stepper را تنظیم کن
-  React.useEffect(() => {
-    setStepperToComplete();
-  }, []);
+  // اگر هنوز داده‌ها بارگذاری نشده، اسکلت نشان بده
+  if (!isHydrated) {
+    return (
+      <ContainerConfirm sx={{ height: "864px" }}>
+        <div>Loading transaction data...</div>
+      </ContainerConfirm>
+    );
+  }
 
   return (
-    <ContainerConfirm
-      sx={{
-        height: "864px",
-      }}
-    >
+    <ContainerConfirm sx={{ height: "864px" }}>
       <BoxConfirmRoot>
         <BoxConfirmDetail>
           <TypographyConfirm sx={{ marginLeft: "0" }}>
@@ -79,7 +155,7 @@ function PmSuccessPage() {
           <TypographyDetail>Send :</TypographyDetail>
           <BoxDetail>
             <TypographyDetail sx={{ color: "#FFFFFF" }}>
-              {exchangeState.fromAmount || "100"}
+              {displayData.fromAmount || "100"}
             </TypographyDetail>
             {getSendIcon()}
             <TypographyDetail sx={{ color: "#FFFFFF" }}>
@@ -91,7 +167,7 @@ function PmSuccessPage() {
           <TypographyDetail>Receive :</TypographyDetail>
           <BoxDetail sx={{ gap: "9px" }}>
             <TypographyDetail sx={{ color: "#FFFFFF" }}>
-              {exchangeState.toAmount || "120"}
+              {displayData.toAmount || "120"}
             </TypographyDetail>
             {getReceiveIcon()}
             <TypographyDetail sx={{ color: "#FFFFFF" }}>
@@ -112,27 +188,17 @@ function PmSuccessPage() {
           <TypographySuccess>Payment Success !</TypographySuccess>
         </BoxDetail>
         <TypographyDetail sx={{ marginTop: "28px", fontSize: "19.5px" }}>
-          The Transaction Was Successfully Completed And The Amount Of 100
-          Tether Was Deposited To This Address
+          The Transaction Was Successfully Completed And The Amount Of {displayData.fromAmount || "100"} {getSendCurrencyText()} Was Deposited
         </TypographyDetail>
         <BoxDetail
           sx={{
             marginTop: "30px",
             alignItems: "center",
-            gap:"79px"
+            gap: "79px"
           }}
         >
-          <TypographyDetail sx={{fontSize:'20px'}}>E- voucher :</TypographyDetail>
-          <TextFieldSuccess sx={{ marginTop: 0,marginLeft:0 }} placeholder="2326564925" />
-        </BoxDetail>
-        <BoxDetail
-          sx={{
-            marginTop: "18px",
-            alignItems: "center",
-          }}
-        >
-          <TypographyDetail>activation code :</TypographyDetail>
-          <TextFieldSuccess sx={{ marginTop: 0,marginLeft:0 }} placeholder="9012037427092330" />
+          <TypographyDetail sx={{fontSize:'20px'}}>Address:</TypographyDetail>
+          <TextFieldSuccess sx={{ marginTop: 0, marginLeft: 0 , }} placeholder="X09aa998ee454c456255daf3ac94908f1dcfb7033" />
         </BoxDetail>
         <BoxDetail
           sx={{
@@ -141,16 +207,57 @@ function PmSuccessPage() {
           }}
         >
           <TypographyDetail>Amount :</TypographyDetail>
-          <TextFieldSuccess sx={{ marginTop: 0,marginLeft:0 }} placeholder="100 USDT" />
+          <TextFieldSuccess sx={{ marginTop: 0, marginLeft: 0 }} placeholder="100 USDT" />
         </BoxDetail>
-          <BoxDetail
+        <BoxDetail
           sx={{
             marginTop: "18px",
             alignItems: "center",
           }}
         >
           <TypographyDetail>Time & Date :</TypographyDetail>
-          <TextFieldSuccess sx={{ marginTop: 0,marginLeft:0,letterSpacing:"25%" }} placeholder="25-02-2023, 13:22:16" />
+          <TextFieldSuccess sx={{ marginTop: 0, marginLeft: 0 }} placeholder="25-02-2023, 13:22:16" />
+        </BoxDetail>
+        <BoxDetail
+          sx={{
+            marginTop: "18px",
+            alignItems: "center",
+          }}
+        >
+          <TypographyDetail>Tx Id :</TypographyDetail>
+     <TextFieldSuccess
+  multiline
+  rows={3}
+  placeholder="f9798ecf9e9cc54dd819c8e1dc36588a6a7fe9d8e055d56ef6a9847139a4ed6c"
+  sx={{
+    marginTop: 0,
+    marginLeft: 0,
+    width: "791px", // عرض کل کامپوننت
+    "& .MuiInputBase-root": {
+      height: "112px",
+      fontSize: "16px",
+      fontWeight: 700,
+      lineHeight: "36px",
+      letterSpacing: "0.25em",
+      alignItems: "flex-start",
+      padding: "16px", // فاصله داخلی برای زیبایی
+    },
+    "& .MuiInputBase-input": {
+      // این بخش هم متن تایپی و هم پلیس‌هولدر را محدود می‌کند
+      maxWidth: "628px", 
+      lineHeight: "36px",
+      wordBreak: "break-all",
+      // اگر می‌خواهید متن در وسط باشد، می‌توانید margin: "0 auto" بدهید
+    },
+    "& .MuiInputBase-input::placeholder": {
+      lineHeight: "36px",
+      opacity: 1,
+      wordBreak: "break-all",
+      whiteSpace: "pre-wrap",
+      maxWidth: "628px", // اطمینان از محدود شدن عرض پلیس‌هولدر
+    },
+  }}
+/>
         </BoxDetail>
       </BoxConfirmRoot>
     </ContainerConfirm>

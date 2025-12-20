@@ -25,20 +25,43 @@ const initialState: AuthState = {
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials: { email: string; password: string }) => {
-    const response = await new Promise<{ user: User; token: string }>((resolve, reject) => {
+    // اعتبارسنجی ساده: هر ایمیل و رمزی که وارد شود قبول است
+    // (در محیط واقعی باید با API چک شود)
+    const isValidEmail = (email: string) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
+    
+    const isValidPassword = (password: string) => {
+      return password.length >= 6; // حداقل 6 کاراکتر
+    };
+    
+    // اعتبارسنجی ایمیل و رمز
+    if (!isValidEmail(credentials.email)) {
+      throw new Error('Please enter a valid email address');
+    }
+    
+    if (!isValidPassword(credentials.password)) {
+      throw new Error('Password must be at least 6 characters long');
+    }
+    
+    // شبیه‌سازی پاسخ API
+    const response = await new Promise<{ user: User; token: string }>((resolve) => {
       setTimeout(() => {
-        if (credentials.email === 'admin@example.com' && credentials.password === 'admin123') {
-          resolve({
-            user: { id: '1', email: credentials.email, name: 'Admin User' },
-            token: 'mock-jwt-token'
-          });
-        } else {
-          reject(new Error('Invalid email or password'));
-        }
+        resolve({
+          user: { 
+            id: Date.now().toString(), // ID یکتا
+            email: credentials.email, 
+            name: credentials.email.split('@')[0] // نام از ایمیل استخراج می‌شود
+          },
+          token: 'mock-jwt-token-' + Date.now()
+        });
       }, 1000);
     });
     
     localStorage.setItem('token', response.token);
+    localStorage.setItem('user', JSON.stringify(response.user));
+    
     return response;
   }
 );
@@ -52,9 +75,25 @@ const authSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
     },
     clearError: (state) => {
       state.error = null;
+    },
+    // افزودن reducer برای بارگذاری کاربر از localStorage
+    loadUserFromStorage: (state) => {
+      const token = localStorage.getItem('token');
+      const userStr = localStorage.getItem('user');
+      
+      if (token && userStr) {
+        try {
+          state.user = JSON.parse(userStr);
+          state.token = token;
+          state.isAuthenticated = true;
+        } catch (error) {
+          console.error('Error parsing user from localStorage:', error);
+        }
+      }
     },
   },
   extraReducers: (builder) => {
@@ -76,5 +115,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { logout, clearError, loadUserFromStorage } = authSlice.actions;
 export default authSlice.reducer;

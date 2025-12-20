@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   BoxConfirmDetail,
   BoxConfirmRoot,
@@ -15,11 +15,164 @@ import Tether from "../assets/images/tether/tether (2) 1.svg?react";
 import PerMoney from "../assets/images/perfectmoney/Group 5.svg?react";
 import Line from "../assets/images/lines/Line 10.svg?react";
 import Close from "../assets/images/CloseFailed/Frame (12).svg?react";
-function PmFailedPage() {
+import { useNavigate, useLocation } from "react-router-dom"; // اضافه کردن useLocation
+
+function SendFailedPage() {
   const exchangeState = useAppSelector((state: RootState) => state.exchange);
+  const navigate = useNavigate();
+  const location = useLocation(); // اضافه کردن location
+  
+  const [isHydrated, setIsHydrated] = useState<boolean>(false);
+  const [displayData, setDisplayData] = useState({
+    fromAmount: "100",
+    fromCurrency: "tether",
+    toAmount: "120",
+    toCurrency: "permoney"
+  });
+
+  // تابع بارگذاری داده‌ها از localStorage
+  const loadFromLocalStorage = () => {
+    try {
+      // اول از location.state چک کن (اگر از صفحه waiting هدایت شده‌ای)
+      if (location.state?.transactionData) {
+        console.log('🎯 SendFailedPage: Using data from location state:', location.state.transactionData);
+        
+        const transactionData = location.state.transactionData;
+        setDisplayData({
+          fromAmount: transactionData.fromAmount || "100",
+          fromCurrency: transactionData.fromCurrency || "tether",
+          toAmount: transactionData.toAmount || "120",
+          toCurrency: transactionData.toCurrency || "permoney"
+        });
+        return true;
+      }
+      
+      // اگر location.state نبود، از localStorage بارگذاری کن
+      const savedData = localStorage.getItem('lastExchangeData');
+      console.log('🔍 SendFailedPage: Checking localStorage for lastExchangeData');
+      
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        
+        if (parsedData.fromAmount) {
+          console.log('🔄 SendFailedPage: Loading from localStorage:', parsedData);
+          setDisplayData({
+            fromAmount: parsedData.fromAmount || "100",
+            fromCurrency: parsedData.fromCurrency || "tether",
+            toAmount: parsedData.toAmount || "120",
+            toCurrency: parsedData.toCurrency || "permoney"
+          });
+          return true;
+        }
+      }
+      
+      // سایر کلیدها
+      const backupKeys = ['exchangeData', 'exchangeWaitingData', 'currentTransaction', 'exchangeReceiveData', 'exchangeFlowData'];
+      
+      for (const key of backupKeys) {
+        const backupData = localStorage.getItem(key);
+        if (backupData) {
+          const parsedData = JSON.parse(backupData);
+          if (parsedData.fromAmount && parsedData.timestamp) {
+            const isRecent = new Date().getTime() - parsedData.timestamp < 5 * 60 * 1000; // 5 دقیقه
+            if (isRecent) {
+              console.log(`🔁 SendFailedPage: Loading from backup key ${key}:`, parsedData);
+              setDisplayData({
+                fromAmount: parsedData.fromAmount || "100",
+                fromCurrency: parsedData.fromCurrency || "tether",
+                toAmount: parsedData.toAmount || "120",
+                toCurrency: parsedData.toCurrency || "permoney"
+              });
+              return true;
+            }
+          }
+        }
+      }
+      
+      // اگر هیچ داده‌ای در localStorage نبود، از Redux استفاده کن
+      if (exchangeState.fromAmount && exchangeState.toAmount) {
+        console.log('📝 SendFailedPage: Using data from Redux:', exchangeState);
+        setDisplayData({
+          fromAmount: exchangeState.fromAmount,
+          fromCurrency: exchangeState.fromCurrency || "tether",
+          toAmount: exchangeState.toAmount,
+          toCurrency: exchangeState.toCurrency || "permoney"
+        });
+        return true;
+      }
+    } catch (error) {
+      console.error('❌ SendFailedPage: Error loading from localStorage:', error);
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    console.log('🚀 SendFailedPage mounted');
+    console.log('📍 Location state:', location.state);
+    console.log('📊 Current exchangeState:', exchangeState);
+    
+    const dataLoaded = loadFromLocalStorage();
+    
+    if (!dataLoaded) {
+      console.log('⚠️ SendFailedPage: Using default data');
+      // ذخیره داده‌های پیش‌فرض در localStorage
+      const defaultData = {
+        ...displayData,
+        timestamp: new Date().getTime(),
+        savedFrom: 'sendfailed-default'
+      };
+      localStorage.setItem('lastExchangeData', JSON.stringify(defaultData));
+    }
+    
+    setIsHydrated(true);
+    
+    // ذخیره stepper status
+    localStorage.setItem("stepperStatus", "complete");
+    
+    // ذخیره داده‌های فعلی در localStorage
+    const saveCurrentData = () => {
+      const dataToSave = {
+        ...displayData,
+        timestamp: new Date().getTime(),
+        page: 'sendfailed',
+        savedAt: new Date().toISOString()
+      };
+      
+      localStorage.setItem('currentTransaction', JSON.stringify(dataToSave));
+    };
+    
+    saveCurrentData();
+    
+    // ذخیره هنگام بسته شدن صفحه
+    const handleBeforeUnload = () => {
+      console.log('💾 SendFailedPage: Saving before unload');
+      saveCurrentData();
+    };
+    
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [exchangeState, location.state]);
+
+  // تابع برای بازگشت به استپ اول
+  const handleTryAgain = () => {
+    // پاک کردن وضعیت stepper از localStorage
+    localStorage.removeItem("stepperStatus");
+    
+    // پاک کردن داده‌های تراکنش قدیمی
+    localStorage.removeItem('exchangeData');
+    localStorage.removeItem('exchangeWaitingData');
+    localStorage.removeItem('lastExchangeData');
+    localStorage.removeItem('currentTransaction');
+    
+    // هدایت کاربر به صفحه اصلی یا صفحه first step
+    navigate("/"); // یا به مسیر صفحه اول خود هدایت کنید
+  };
 
   const getSendIcon = () => {
-    if (exchangeState.fromCurrency === "tether") {
+    if (displayData.fromCurrency === "tether") {
       return <Tether />;
     } else {
       return <PerMoney />;
@@ -27,7 +180,7 @@ function PmFailedPage() {
   };
 
   const getSendCurrencyText = () => {
-    if (exchangeState.fromCurrency === "tether") {
+    if (displayData.fromCurrency === "tether") {
       return "USDT";
     } else {
       return "Perfect Money";
@@ -35,7 +188,7 @@ function PmFailedPage() {
   };
 
   const getReceiveIcon = () => {
-    if (exchangeState.toCurrency === "tether") {
+    if (displayData.toCurrency === "tether") {
       return <Tether />;
     } else {
       return <PerMoney />;
@@ -43,24 +196,23 @@ function PmFailedPage() {
   };
 
   const getReceiveCurrencyText = () => {
-    if (exchangeState.toCurrency === "tether") {
+    if (displayData.toCurrency === "tether") {
       return "USDT";
     } else {
       return "Perfect Money";
     }
   };
 
-  // این تابع stepper را به مرحله complete برمی‌گرداند
-  const setStepperToComplete = () => {
-    // اگر stepper state global دارید، آن را update کنید
-    // یا از context/Redux استفاده کنید
-    localStorage.setItem("stepperStatus", "complete");
-  };
-
-  // هنگام لود صفحه، stepper را تنظیم کن
-  React.useEffect(() => {
-    setStepperToComplete();
-  }, []);
+  // اگر هنوز داده‌ها بارگذاری نشده، اسکلت نشان بده
+  if (!isHydrated) {
+    return (
+      <ContainerConfirm sx={{ height: "684px" }}>
+        <div style={{ color: "white", textAlign: "center", marginTop: "50px" }}>
+          Loading transaction data...
+        </div>
+      </ContainerConfirm>
+    );
+  }
 
   return (
     <ContainerConfirm
@@ -78,7 +230,7 @@ function PmFailedPage() {
           <TypographyDetail>Send :</TypographyDetail>
           <BoxDetail>
             <TypographyDetail sx={{ color: "#FFFFFF" }}>
-              {exchangeState.fromAmount || "100"}
+              {displayData.fromAmount || "100"}
             </TypographyDetail>
             {getSendIcon()}
             <TypographyDetail sx={{ color: "#FFFFFF" }}>
@@ -90,7 +242,7 @@ function PmFailedPage() {
           <TypographyDetail>Receive :</TypographyDetail>
           <BoxDetail sx={{ gap: "9px" }}>
             <TypographyDetail sx={{ color: "#FFFFFF" }}>
-              {exchangeState.toAmount || "120"}
+              {displayData.toAmount || "120"}
             </TypographyDetail>
             {getReceiveIcon()}
             <TypographyDetail sx={{ color: "#FFFFFF" }}>
@@ -116,26 +268,24 @@ function PmFailedPage() {
           sx={{
             marginTop: "29px",
             marginX: "auto",
-           
           }}
         >
-          <TypographySuccess sx={{color:"#ABABAB",fontSize:"20px"}}>
-            Please Complete The Payment Process Again{" "}
+          <TypographySuccess sx={{ color: "#ABABAB", fontSize: "20px" }}>
+            Please Complete The Payment Process Again
           </TypographySuccess>
         </BoxDetail>
 
-      <BoxDetail
+        <BoxDetail
           sx={{
             marginTop: "30px",
             marginX: "auto",
-           
           }}
         >
-        <ButtonFailed>Try Again</ButtonFailed>
+          <ButtonFailed onClick={handleTryAgain}>Try Again</ButtonFailed>
         </BoxDetail>
       </BoxConfirmRoot>
     </ContainerConfirm>
   );
 }
 
-export default PmFailedPage;
+export default SendFailedPage;

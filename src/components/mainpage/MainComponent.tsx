@@ -41,9 +41,58 @@ const MainComponent: React.FC = () => {
     (state) => state.exchange
   );
 
+  // تابع محاسبه مقدار مقصد بر اساس نوع تبدیل
+  const calculateToAmount = (amount: string, fromCurr: string, toCurr: string): string => {
+    if (!amount) return "";
+    
+    const numAmount = parseFloat(amount);
+    
+    // اگر از تتر به پرفکت مانی تبدیل می‌کنیم، تقسیم بر ۲
+    if (fromCurr === "tether" && toCurr === "permoney") {
+      return (numAmount / 2).toFixed(2);
+    }
+    
+    // اگر از پرفکت مانی به تتر تبدیل می‌کنیم، ضرب در ۲
+    if (fromCurr === "permoney" && toCurr === "tether") {
+      return (numAmount * 2).toFixed(2);
+    }
+    
+    // برای تبدیل‌های دیگر از نرخ عادی (همان ارز به همان ارز)
+    return numAmount.toFixed(2);
+  };
+
+  // تابع محاسبه مقدار مبدا بر اساس مقدار مقصد
+  const calculateFromAmount = (amount: string, fromCurr: string, toCurr: string): string => {
+    if (!amount) return "";
+    
+    const numAmount = parseFloat(amount);
+    
+    // اگر از تتر به پرفکت مانی تبدیل می‌کنیم، مبدا باید ضرب در ۲ باشد
+    if (fromCurr === "tether" && toCurr === "permoney") {
+      return (numAmount * 2).toFixed(2);
+    }
+    
+    // اگر از پرفکت مانی به تتر تبدیل می‌کنیم، مبدا باید تقسیم بر ۲ باشد
+    if (fromCurr === "permoney" && toCurr === "tether") {
+      return (numAmount / 2).toFixed(2);
+    }
+    
+    // برای تبدیل‌های دیگر از نرخ عادی (همان ارز به همان ارز)
+    return numAmount.toFixed(2);
+  };
+
   // تابع برای جابجا کردن ارزها
   const handleSwap = () => {
+    // ذخیره مقادیر فعلی
+    const currentFromAmount = fromAmount;
+    const currentToAmount = toAmount;
+    
+    // جابجایی ارزها در Redux
     dispatch(swapCurrencies());
+    
+    // جابجایی مقادیر عددی
+    dispatch(setFromAmount(currentToAmount));
+    dispatch(setToAmount(currentFromAmount));
   };
 
   // تابع برای تغییر مقدار From
@@ -53,11 +102,10 @@ const MainComponent: React.FC = () => {
     if (value === "" || /^\d*\.?\d*$/.test(value)) {
       dispatch(setFromAmount(value));
 
-      // محاسبه خودکار مبلغ مقصد (نرخ فرضی)
+      // محاسبه خودکار مبلغ مقصد
       if (value) {
-        const exchangeRate = 1; // نرخ واقعی را از API دریافت کنید
-        const calculatedAmount = (parseFloat(value) * exchangeRate).toFixed(2);
-        dispatch(setToAmount(calculatedAmount.toString()));
+        const calculatedAmount = calculateToAmount(value, fromCurrency, toCurrency);
+        dispatch(setToAmount(calculatedAmount));
       } else {
         dispatch(setToAmount(""));
       }
@@ -70,17 +118,45 @@ const MainComponent: React.FC = () => {
     // فقط اعداد و نقطه اعشار مجاز هستند
     if (value === "" || /^\d*\.?\d*$/.test(value)) {
       dispatch(setToAmount(value));
+      
+      // محاسبه خودکار مبلغ مبدا
+      if (value) {
+        const calculatedAmount = calculateFromAmount(value, fromCurrency, toCurrency);
+        dispatch(setFromAmount(calculatedAmount));
+      } else {
+        dispatch(setFromAmount(""));
+      }
     }
   };
 
   // تابع برای تغییر ارز From
   const handleFromCurrencyChange = (e: SelectChangeEvent<string>) => {
-    dispatch(setFromCurrency(e.target.value));
+    const newFromCurrency = e.target.value;
+    dispatch(setFromCurrency(newFromCurrency));
+    
+    // محاسبه مجدد وقتی ارز مبدا تغییر می‌کند
+    if (fromAmount) {
+      const calculatedAmount = calculateToAmount(fromAmount, newFromCurrency, toCurrency);
+      dispatch(setToAmount(calculatedAmount));
+    } else if (toAmount) {
+      const calculatedAmount = calculateFromAmount(toAmount, newFromCurrency, toCurrency);
+      dispatch(setFromAmount(calculatedAmount));
+    }
   };
 
   // تابع برای تغییر ارز To
   const handleToCurrencyChange = (e: SelectChangeEvent<string>) => {
-    dispatch(setToCurrency(e.target.value));
+    const newToCurrency = e.target.value;
+    dispatch(setToCurrency(newToCurrency));
+    
+    // محاسبه مجدد وقتی ارز مقصد تغییر می‌کند
+    if (fromAmount) {
+      const calculatedAmount = calculateToAmount(fromAmount, fromCurrency, newToCurrency);
+      dispatch(setToAmount(calculatedAmount));
+    } else if (toAmount) {
+      const calculatedAmount = calculateFromAmount(toAmount, fromCurrency, newToCurrency);
+      dispatch(setFromAmount(calculatedAmount));
+    }
   };
 
   // تابع برای رفتن به صفحه Confirm

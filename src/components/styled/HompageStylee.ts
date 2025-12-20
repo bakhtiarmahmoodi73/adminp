@@ -8,6 +8,7 @@ import {
   TextField,
   Box,
   Checkbox,
+  TextareaAutosize,
 } from "@mui/material";
 
 export const ContainerRoot = styled(Container)({
@@ -401,7 +402,7 @@ export const ButtonContainer = styled(Box)({
   justifyContent: "center",
   gap: "16px",
   marginTop: "32px",
-  paddingBottom: "20px"
+  paddingBottom: "20px",
 });
 
 // دکمه Success
@@ -416,7 +417,7 @@ export const ButtonSuccess = styled(Button)({
   textTransform: "uppercase",
   "&:hover": {
     backgroundColor: "#359768",
-  }
+  },
 });
 
 // دکمه Failed
@@ -431,5 +432,354 @@ export const ButtonFailedpm = styled(Button)({
   textTransform: "uppercase",
   "&:hover": {
     backgroundColor: "#FF3742",
-  }
+  },
+});
+
+export const CardContact = styled(Container)({
+  width: "560px",
+  marginX: "auto",
+  marginTop: "70px",
+  marginBottom: "46px",
+  height: "691px",
+  backgroundColor: "#2A3342",
+  borderRadius: "30px",
+  borderColor: "#596B89",
+  display: "flex",
+  flexDirection: "column",
+  padding: 0,
+});
+
+export const TypographyContact = styled(Typography)({
+  fontSize: "32px",
+  fontWeight: 700,
+  marginTop: "23px",
+  marginLeft: "38px",
+  background: " linear-gradient(90deg, #40A578 0%, #99D9A6 100%)",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  backgroundClip: "text",
+  color: "transparent",
+  display: "block", // تغییر این خط
+  padding: 0,
+});
+export const TypographyContactDetail = styled(Typography)({
+  fontWeight: 700,
+  display: "block",
+  padding: 0,
+  lineHeight: "49px",
+  fontSize: "16px",
+  marginLeft: "38px",
+  color: "#ABABAB",
+});
+
+export const TextFieldContact = styled(TextField)({
+  backgroundColor: "#242C39",
+  borderRadius: "10px",
+  height: "57px",
+  width: "485px",
+  marginTop: "22px",
+  marginLeft: "39px",
+
+  "& .MuiOutlinedInput-root": {
+    paddingRight: 0,
+    paddingLeft: 0,
+    height: "57px",
+    borderRadius: "10px",
+    color: "#FFFFFF",
+    fontSize: "14px",
+    fontWeight: 700,
+  },
+
+  "& input": {
+    textAlign: "left",
+    paddingLeft: "20px",
+    color: "#FFFFFF",
+  },
+  "& input::placeholder": {
+    color: "#FFFFFF",
+    opacity: 1,
+  },
+});
+
+export const TextAreaContact = styled(TextareaAutosize)({
+  width: "485px",
+  height: "149px", // ارتفاع ثابت
+  marginTop: "15px",
+  marginLeft: "39px",
+  padding: "16px 20px", // padding همه طرفه مثل TextField
+  borderRadius: "10px",
+  backgroundColor: "#242C39",
+  color: "#FFFFFF",
+  fontSize: "14px",
+  fontWeight: 700,
+  boxSizing: "border-box", // padding داخل اندازه محاسبه شود
+  resize: "none", // کاربر نمی‌تواند اندازه تغییر دهد
+  border: "none", // بدون border
+  outline: "none", // بدون خط فوکوس پیش‌فرض
+
+  "&::placeholder": {
+    color: "#FFFFFF",
+    opacity: 1,
+  },
+
+  "&:focus": {
+    outline: "none", // هنگام فوکوس خط دور نیفتد
+  },
+});
+
+export const ButtonContact = styled(Button)({
+  display: "block",
+  backgroundColor: "#1D8D94",
+  width: "485px",
+  height: "60",
+  marginLeft: "38px",
+  borderRadius: "10px",
+  marginTop: "23px",
+  fontSize: "16px",
+  fontWeight: 700,
+  color: "#FFFFFF",
+  textTransform: "none",
+  boxShadow: "0 4px 8px rgba(29, 141, 148, 0.5)",
+});
+
+export const CardAbout = styled(Container)({
+  position: "relative",
+  width: "1140px",
+  marginX: "auto",
+  marginTop: "78px",
+  height: "485px",
+  backgroundColor: "#2A3342",
+  borderRadius: "30px",
+  display: "flex",
+  padding: 0,
+});
+
+export const BoxAbout = styled(Box)({
+  display: "flex",
+  flexDirection: "column",
+  width: "580px",
+});
+export const TypographyAbout = styled(Typography)({
+  fontSize: "48px",
+  fontWeight: 700,
+  marginTop: "33px",
+  marginLeft: "55px",
+  marginRight: "27px",
+  background: "linear-gradient(111.42deg, #40A578 5.33%, #99D9A6 47.9%)",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  backgroundClip: "text",
+  color: "transparent",
+  display: "block",
+  padding: 0,
+});
+export const TypographyAboutText = styled(Typography)({
+  fontSize: "18px",
+  fontWeight: 700,
+  marginTop: "26px",
+  marginLeft: "55px",
+  marginRight: "39px",
+  color: "#ABABAB",
+  display: "block",
+  padding: 0,
+});
+export const CircleAbout = styled(Box)({
+  position: "absolute",
+  top: "20px",
+  left: "580px",
+  width: "535px",
+  height: "535px",
+  borderRadius: "50%",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  backgroundColor: "#242C39",
+});
+
+export const BoxContainer = styled(Box)({
+  display: "block",
+  margin: 0,
+  padding: 0,
+  marginBottom: "422px",
+});
+
+export const CardAboutDetail = styled(Box)({
+  position: "absolute",
+  width: "657px",
+  marginX: "auto",
+  marginTop: "80px",
+  height: "318px",
+  backgroundColor: "#242C39",
+  border: " 1px solid #2E3E59",
+  borderRadius: "30px",
+  display: "flex",
+  flexDirection: "column",
+  padding: 0,
+});
+export const TypographyTitle = styled(Typography)({
+  fontSize: "32px",
+  fontWeight: 700,
+  marginTop: "28px",
+  marginLeft: "49px",
+  color: "#FFFFFF",
+  display: "block",
+  padding: 0,
+  lineHeight: "96px",
+});
+export const Typographysub = styled(Typography)({
+  width: "560px",
+  height: "95px",
+  fontSize: "18px",
+  fontWeight: 700,
+  marginLeft: "49px",
+  color: "#ABABABAB",
+  display: "block",
+  padding: 0,
+  lineHeight: "42px",
+});
+
+export const CardFaq = styled(Box)({
+  width: "1140px",
+  marginLeft: "auto",
+  marginRight: "auto",
+  marginTop: "78px",
+  height: "402px",
+  backgroundColor: "#2A3342",
+  borderRadius: "30px",
+  display: "flex",
+  flexDirection: "column",
+  padding: 0,
+});
+
+export const TypographyFaq = styled(Typography)({
+  fontSize: "48px",
+  fontWeight: 700,
+  lineHeight: "77px",
+  marginTop: "59px",
+  marginLeft: "440px",
+  marginRight: "440px",
+  background: "linear-gradient(111.42deg, #40A578 5.33%, #99D9A6 47.9%)",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  backgroundClip: "text",
+  color: "transparent",
+  display: "block",
+  padding: 0,
+});
+export const BoxSearchFaq = styled(Box)({
+  position: "relative",
+
+  display: "flex",
+  marginTop: "39px",
+  marginLeft: "96px",
+  marginRight: "97px",
+});
+export const TextFieldFaq = styled(TextField)({
+  backgroundColor: "#242C39",
+  borderRadius: "10px",
+  width: "754px",
+
+  "& .MuiOutlinedInput-root": {
+    height: "80px",
+    borderRadius: "10px",
+  },
+
+  "& .MuiOutlinedInput-input": {
+    padding: "0 40px",
+    height: "100%",
+    boxSizing: "border-box",
+    color: "#FFFFFF",
+    fontSize: "20px",
+    fontWeight: 700,
+  },
+
+  // استایل placeholder
+  "& .MuiOutlinedInput-input::placeholder": {
+    color: "#FFFFFF",
+    opacity: 1,
+    // اضافه کردن پدینگ یا مارجین به placeholder
+    // این بخش ممکن است در همه مرورگرها کار نکند
+    paddingLeft: "53px",
+  },
+
+  // روش جایگزین برای استایل placeholder
+  "& .MuiInputLabel-root": {
+    color: "#FFFFFF",
+  },
+});
+export const ButtonFaq = styled(Button)({
+  display: "block",
+  backgroundColor: "#1D8D94",
+  width: "173px",
+  height: "80px",
+  marginLeft: "20px",
+  borderRadius: "10px",
+  marginTop: "0px",
+  fontSize: "14px",
+  fontWeight: 700,
+  color: "#FFFFFF",
+  textTransform: "none",
+  boxShadow: " 0px 4px 20px 0px rgba(29, 141, 148, 0.3)",
+});
+
+export const BoxButtonFaq = styled(Box)({
+  display: "flex",
+  marginTop: "26px",
+  marginLeft: "96px",
+  marginRight: "97px",
+  gap: "19px",
+});
+export const ButtonFaqInfo = styled(Button)({
+  display: "block",
+  backgroundColor: "#2A3342",
+  width: "174px",
+  height: "57px",
+  borderRadius: "8px",
+  marginTop: "0px",
+  fontSize: "16px",
+  fontWeight: 700,
+  color: " #596B89",
+  textTransform: "none",
+  border: " 1px solid rgba(89, 107, 137, 1)",
+});
+
+export const CardFaqCollapse = styled(Box)({
+  width: "1140px",
+  marginLeft: "auto",
+  marginRight: "auto",
+  marginTop: "54px",
+  height: "242px",
+  backgroundColor: "#242C39",
+  border: " 1px solid #2E3E59",
+  borderRadius: "30px",
+  display: "flex",
+  flexDirection: "column",
+  // justifyContent: "center",
+  padding: 0,
+});
+
+export const CardFlexFaq = styled(Box)({
+  marginLeft: "41px",
+  display: "flex",
+
+  padding: 0,
+  marginTop:"36px"
+});
+export const TypographyFaqCollapse = styled(Typography)({
+  fontSize: "24px",
+  fontWeight: 700,
+  lineHeight: "100%",
+  marginLeft: "12px",
+  color: "#FFFFFF",
+  padding: 0,
+});
+export const TypographyFaqCollapseSub = styled(Typography)({
+  width:"1035px",
+  fontSize: "16px",
+  fontWeight: 700,
+  lineHeight: "32px",
+  marginLeft: "77px",
+  color: "#ABABAB",
+  marginTop:"29px",
+  padding: 0,
 });

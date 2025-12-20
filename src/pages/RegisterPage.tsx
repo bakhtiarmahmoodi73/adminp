@@ -24,7 +24,7 @@ import { TypographyLogin } from "../components/styled/LoginStyled";
 // تعریف schema برای اعتبارسنجی با Zod
 const nameSchema = z.object({
   name: z.string()
-    .min(6, "Name is required")
+    .min(1, "Name is required")
   
 });
 

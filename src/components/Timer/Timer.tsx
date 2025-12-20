@@ -1,230 +1,134 @@
-// Timer.tsx
-import React, { useState, useEffect, useCallback } from 'react';
-import { Box } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import React, { useState, useEffect } from "react";
+import { Box, CircularProgress } from "@mui/material";
+import { TypographyDetail } from "../styled/HompageStylee";
+import Watch from "../../assets/images/tether/Frame (5).svg?react";
 
-interface TimerProps {
-  initialMinutes?: number;
-  initialSeconds?: number;
-}
+const TOTAL_TIME = 600; 
+const CIRCLE_SIZE = 171;
+const STROKE_WIDTH = 1;
 
-interface TimeLeft {
-  minutes: number;
-  seconds: number;
-}
-
-// کانتینر اصلی - کاملاً مشابه عکس
-const TimerContainer = styled(Box)({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: '#F3F3F3',
-  borderRadius: '20px',
-  padding: '32px 40px',
-  width: 'fit-content',
-  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.8)',
-  background: 'linear-gradient(145deg, #f0f0f0, #f8f8f8)',
-});
-
-// عنوان بالایی
-const TimeLabel = styled(Box)({
-  fontSize: '22px',
-  fontWeight: '700',
-  color: '#2C3E50',
-  marginBottom: '30px',
-  letterSpacing: '0.5px',
-  textAlign: 'center',
-  fontFamily: "'Arial Rounded MT Bold', 'Arial', sans-serif",
-  textShadow: '0.5px 0.5px 0px rgba(255,255,255,0.8)',
-});
-
-// بخش نمایش اعداد زمان
-const TimeDisplay = styled(Box)({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '8px',
-  marginBottom: '28px',
-});
-
-// مستطیل نمایش عدد (دقیقه/ثانیه)
-const TimeBox = styled(Box)({
-  width: '85px',
-  height: '100px',
-  backgroundColor: '#FFFFFF',
-  borderRadius: '12px',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  boxShadow: 
-    '0 6px 12px rgba(0, 0, 0, 0.08), ' +
-    'inset 0 1px 0 rgba(255, 255, 255, 0.9), ' +
-    'inset 0 -1px 0 rgba(0, 0, 0, 0.05)',
-  position: 'relative',
-  overflow: 'hidden',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: '50%',
-    left: '0',
-    right: '0',
-    height: '1px',
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
-    zIndex: 1,
-  },
-});
-
-// عدد بزرگ
-const TimeNumber = styled(Box)({
-  fontSize: '58px',
-  fontWeight: '800',
-  color: '#2C3E50',
-  fontVariantNumeric: 'tabular-nums',
-  fontFamily: "'Segoe UI', Tahoma, sans-serif",
-  letterSpacing: '1px',
-  lineHeight: '1',
-  textShadow: '1px 1px 1px rgba(0, 0, 0, 0.05)',
-  marginTop: '-5px',
-});
-
-// برچسب زیر عدد
-const TimeUnitLabel = styled(Box)({
-  fontSize: '12px',
-  fontWeight: '600',
-  color: '#7F8C8D',
-  textTransform: 'uppercase',
-  letterSpacing: '1px',
-  marginTop: '5px',
-  fontFamily: "'Arial', sans-serif",
-  position: 'absolute',
-  bottom: '10px',
-});
-
-// دو نقطه وسط
-const ColonSeparator = styled(Box)({
-  fontSize: '58px',
-  fontWeight: '700',
-  color: '#2C3E50',
-  margin: '0 6px',
-  lineHeight: '1',
-  paddingBottom: '8px',
-  fontFamily: "'Segoe UI', Tahoma, sans-serif",
-  textShadow: '1px 1px 1px rgba(0, 0, 0, 0.05)',
-});
-
-// خط زیرین با اطلاعات اضافی
-const BottomInfo = styled(Box)({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '6px',
-  marginTop: '15px',
-  paddingTop: '15px',
-  borderTop: '2px solid rgba(0, 0, 0, 0.06)',
-  width: '100%',
-});
-
-// مربع خاکستری
-const GraySquare = styled(Box)({
-  width: '28px',
-  height: '28px',
-  backgroundColor: '#E0E0E0',
-  borderRadius: '5px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  boxShadow: 
-    'inset 0 1px 2px rgba(0, 0, 0, 0.1), ' +
-    '0 1px 0 rgba(255, 255, 255, 0.6)',
-});
-
-// عدد داخل مربع
-const SquareNumber = styled(Box)({
-  fontSize: '16px',
-  fontWeight: '700',
-  color: '#2C3E50',
-  fontFamily: "'Arial', sans-serif",
-});
-
-// علامت ضربدر
-const MultiplySign = styled(Box)({
-  fontSize: '16px',
-  fontWeight: '600',
-  color: '#34495E',
-  margin: '0 2px',
-  fontFamily: "'Arial', sans-serif",
-});
-
-const Timer: React.FC<TimerProps> = ({ 
-  initialMinutes = 9, 
-  initialSeconds = 59 
-}) => {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    minutes: initialMinutes,
-    seconds: initialSeconds
-  });
-
-  const decrementTimer = useCallback(() => {
-    setTimeLeft(prev => {
-      if (prev.minutes === 0 && prev.seconds === 0) {
-        return { minutes: 0, seconds: 0 };
-      }
-
-      if (prev.seconds === 0) {
-        return {
-          minutes: prev.minutes - 1,
-          seconds: 59
-        };
-      }
-
-      return {
-        minutes: prev.minutes,
-        seconds: prev.seconds - 1
-      };
-    });
-  }, []);
+const FigmaTimer: React.FC = () => {
+  const [timeLeft, setTimeLeft] = useState(TOTAL_TIME);
 
   useEffect(() => {
-    const timerId = setInterval(decrementTimer, 1000);
-    return () => clearInterval(timerId);
-  }, [decrementTimer]);
+    if (timeLeft <= 0) return;
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev <= 0 ? 0 : prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
 
-  const formatNumber = (num: number): string => {
-    return num.toString().padStart(2, '0');
+  const progress = (timeLeft / TOTAL_TIME) * 100;
+
+  const radius = CIRCLE_SIZE / 2;
+  const angle = (progress / 100) * 360 - 90; 
+  const radians = (angle * Math.PI) / 180;
+  const centerX = CIRCLE_SIZE / 2;
+  const centerY = CIRCLE_SIZE / 2;
+
+  const x = centerX + radius * Math.cos(radians);
+  const y = centerY + radius * Math.sin(radians);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")} : ${secs.toString().padStart(2, "0")}`;
   };
 
   return (
-    <TimerContainer>
-      <TimeLabel>Time For Payment</TimeLabel>
-      
-      <TimeDisplay>
-        <TimeBox>
-          <TimeNumber>{formatNumber(timeLeft.minutes)}</TimeNumber>
-          <TimeUnitLabel>Min</TimeUnitLabel>
-        </TimeBox>
-        
-        <ColonSeparator>:</ColonSeparator>
-        
-        <TimeBox>
-          <TimeNumber>{formatNumber(timeLeft.seconds)}</TimeNumber>
-          <TimeUnitLabel>Sec</TimeUnitLabel>
-        </TimeBox>
-      </TimeDisplay>
-      
-      <BottomInfo>
-        <GraySquare>
-          <SquareNumber>7</SquareNumber>
-        </GraySquare>
-        <MultiplySign>×</MultiplySign>
-        <GraySquare>
-          <SquareNumber>7</SquareNumber>
-        </GraySquare>
-      </BottomInfo>
-    </TimerContainer>
+    <Box
+      sx={{
+        position: "relative",
+        width: CIRCLE_SIZE,
+        height: CIRCLE_SIZE,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+   <svg style={{ position: "absolute", width: 0, height: 0 }}>
+  <defs>
+    <linearGradient id="figmaGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      {/* شروع کاملاً سبز */}
+      <stop offset="0%" stopColor="#40A578" />
+      <stop offset="80%" stopColor="#40A578" />
+
+      {/* انتهای گرادینت */}
+      <stop offset="100%" stopColor="#2A3342" />
+    </linearGradient>
+  </defs>
+</svg>
+
+
+
+      {/* ۱. دایره خاکستری ثابت (پس‌زمینه نوار) */}
+      <CircularProgress
+        variant="determinate"
+        value={100}
+        size={CIRCLE_SIZE}
+        thickness={STROKE_WIDTH}
+        sx={{
+          position: "absolute",
+          color: "rgba(65, 78, 99, 1)",
+          "& .MuiCircularProgress-circle": {
+            strokeWidth: "0.5px",
+          },
+        }}
+      />
+
+      {/* ۲. نوار پیشرفت اصلی با گرادینت طیفی */}
+      <CircularProgress
+        variant="determinate"
+        value={progress}
+        size={CIRCLE_SIZE}
+        thickness={STROKE_WIDTH}
+        sx={{
+          position: "absolute",
+          zIndex: 1,
+          transform: "rotate(-90deg) !important", 
+          "& .MuiCircularProgress-circle": {
+            strokeLinecap: "round",
+            stroke: "url(#figmaGradient)", 
+            transition: "stroke-dashoffset 1s linear",
+          },
+        }}
+      />
+
+      {/* ۳. نقطه متحرک (Dot) */}
+      <Box
+        sx={{
+          position: "absolute",
+          left: `${x}px`,
+          top: `${y}px`,
+          width: 12,
+          height: 12,
+          backgroundColor: "#40A578",
+          borderRadius: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 5,
+          transition: "all 1s linear",
+          boxShadow: "0px 0px 12px 2px rgba(64, 165, 120, 0.7)",
+        }}
+      />
+
+      <Box sx={{ zIndex: 0, justifyContent: "center", userSelect: "none" }}>
+        <TypographyDetail sx={{ fontSize: "12px", color: "#FFFFFF", mb: "12px", fontWeight: 700,  }}>
+          Time For Payment
+        </TypographyDetail>
+
+        <TypographyDetail sx={{ fontSize: "32px", color: "#40A578", fontWeight: 700,  }}>
+          {formatTime(timeLeft)}
+        </TypographyDetail>
+
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", mt: "25px" }}>
+          <Watch style={{ width: 18, height: 18 }} />
+          <TypographyDetail sx={{ fontSize: "14", color: "#FFFFFF", fontWeight: 700 }}>
+            15 : 30
+          </TypographyDetail>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 
-export default Timer;
+export default FigmaTimer;
