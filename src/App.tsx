@@ -1,4 +1,3 @@
-// App.tsx
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import ExchangeLayout from "./components/ExchangeLayout";
@@ -7,7 +6,7 @@ import RegisterPage from "./pages/RegisterPage";
 import ForgotPasswordPage from "./pages/ForgotPassword";
 import ChangePasswordPage from "./pages/ChangePassword";
 import HomePage from "./pages/HomePage";
-import ConfirmPageWithEmail from "./pages/ConfirmPageWithEmail"; // فقط این صفحه
+import ConfirmPageWithEmail from "./pages/ConfirmPageWithEmail";
 import FlowSendPage from "./pages/FlowSendPage";
 import FlowReceivePage from "./pages/FlowReceivePage";
 import SendSuccessPage from "./pages/SendSuccessPage";
@@ -18,13 +17,16 @@ import PmSuccessPage from "./pages/PmSuccessPage";
 import ContactUs from "./pages/ContactUs";
 import AboutUs from "./pages/AboutUs";
 import Faq from "./pages/Faq";
+import Dashboard from "./pages/Dashboard";
+import ProfilePage from "./pages/ProfilePage";
+import PartnerPage from "./pages/PartnerPage";
+import DashboardLayout from "./components/DashboardLayout";
 
 function App() {
   return (
     <Routes>
       {/* Layout اصلی (بدون استپر) */}
       <Route element={<Layout />}>
-        <Route path="/dashboard" element={<div>Dashboard</div>} />
         <Route path="/auth/login" element={<LoginCard />} />
         <Route path="/auth/register" element={<RegisterPage />} />
         <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
@@ -32,21 +34,27 @@ function App() {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/blog" element={<div>Blog Page</div>} />
-        <Route path="/faq" element={<Faq/>} />
+        <Route path="/faq" element={<Faq />} />
+         {/* Layout داشبورد (با سایدبار ثابت) */}
+      <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route index element={<Dashboard />} /> {/* صفحه اصلی داشبورد */}
+        <Route path="profile" element={<ProfilePage />} /> {/* پروفایل */}
+        <Route path="partner" element={<PartnerPage />} /> {/* پارتنر پروگرام */}
       </Route>
+      </Route>
+
+    
 
       {/* ExchangeLayout (با استپر) */}
       <Route element={<ExchangeLayout />}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/confirm" element={<ConfirmPageWithEmail />} />{" "}
-        {/* فقط این */}
+        <Route path="/confirm" element={<ConfirmPageWithEmail />} />
         <Route path="/flow/send" element={<FlowSendPage />} />
         <Route path="/success" element={<SendSuccessPage />} />
         <Route path="/failed" element={<SendFailedPage />} />
         <Route path="/waiting" element={<WaitingPage />} />
         <Route path="/pmsuccess" element={<PmSuccessPage />} />
-                <Route path="/pmfailed" element={<PmFailedPage />} />
-
+        <Route path="/pmfailed" element={<PmFailedPage />} />
         <Route path="/flow/receive" element={<FlowReceivePage />} />
       </Route>
     </Routes>

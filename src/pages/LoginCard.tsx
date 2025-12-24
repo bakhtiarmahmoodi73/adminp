@@ -61,7 +61,7 @@ const LoginCard: React.FC = () => {
 
   // هدایت بعد از لاگین موفق
   useEffect(() => {
-    if (isAuthenticated) navigate("/admin/dashboard");
+    if (isAuthenticated) navigate("/dashboard");
   }, [isAuthenticated, navigate]);
 
   // نمایش خطای سرور

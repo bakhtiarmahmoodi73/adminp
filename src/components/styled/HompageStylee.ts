@@ -763,7 +763,7 @@ export const CardFlexFaq = styled(Box)({
   display: "flex",
 
   padding: 0,
-  marginTop:"36px"
+  marginTop: "36px",
 });
 export const TypographyFaqCollapse = styled(Typography)({
   fontSize: "24px",
@@ -774,12 +774,103 @@ export const TypographyFaqCollapse = styled(Typography)({
   padding: 0,
 });
 export const TypographyFaqCollapseSub = styled(Typography)({
-  width:"1035px",
+  width: "1035px",
   fontSize: "16px",
   fontWeight: 700,
   lineHeight: "32px",
   marginLeft: "77px",
   color: "#ABABAB",
-  marginTop:"29px",
+  marginTop: "29px",
   padding: 0,
+});
+
+export const CardContainerDashboard = styled(Box)({
+  display: "flex",
+  gap: "20px",
+  marginLeft: "auto",
+  marginRight: "auto",
+  padding: 0,
+});
+
+export const CardSideBarDashboard = styled(Card)({
+  width: "270px",
+  height: "294px",
+  marginLeft: "auto",
+  marginTop: "54px",
+  backgroundColor: "#2A3342",
+  borderRadius: "20px",
+  display: "flex",
+  flexDirection: "column",
+  // تراز کردن عمودی کل محتوا در وسط سایدبار
+  justifyContent: "center", 
+  // فاصله‌ی عمودی بین آیتم‌ها
+  gap: "40px", 
+  padding: 0,
+  // حذف سایه پیش‌فرض MUI برای تمیزتر شدن ظاهر
+  boxShadow: "none", 
+});
+export const CardTableDashboard = styled(Card)({
+  minWidth: "850px",
+  minHeight: "775px",
+  flexShrink: 0, // مانع از کوچک شدن کارت می‌شود
+  marginTop: "54px",
+  //  marginLeft: "auto",
+  marginRight: "auto",
+  backgroundColor: " #2A3342",
+  borderRadius: "20px",
+  display: "flex",
+  flexDirection: "column",
+  // justifyContent: "center",
+  padding: 0,
+});
+
+export const CardDetailSideBar = styled(Box)({
+  width: "211px",
+  height: "23px",
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  marginLeft: "33px",
+  padding: 0,
+  cursor: "pointer",
+  transition: "all 0.2s ease-in-out",
+
+  // ۱. حالت پیش‌فرض (خاکستری برای همه)
+  "& svg, & svg path": {
+    stroke: "#ABABAB", // رنگ خاکستری پیش‌فرض
+    fill: "none",
+    transition: "stroke 0.2s ease",
+  },
+  "& p": {
+    color: "#ABABAB",
+    fontWeight: 400,
+    transition: "all 0.2s ease",
+  },
+
+  "&:hover": {
+    "& svg, & svg path": {
+      stroke: "#ffffff !important", // سفید شدن آیکون
+    },
+    "& p": {
+      color: "#ffffff !important", // سفید شدن متن
+      fontWeight: "600 !important", // ضخیم شدن متن
+    },
+  },
+});
+
+export const TypographySideBar = styled(Typography)({
+  fontSize: "18px",
+
+  fontWeight: 400,
+  marginLeft: "13px",
+  color: "#ABABAB",
+  padding: 0,
+});
+
+export const TypographyProfile = styled(Typography)({
+  fontSize: "24px",
+  fontWeight: 600,
+  marginLeft: "181px",
+  color: "#FFFFFF",
+  marginTop: "100px",
 });
