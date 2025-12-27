@@ -31,8 +31,6 @@ const WaitingPage: React.FC = () => {
     toAmount: "120",
     toCurrency: "permoney"
   });
-
-  // تابع ذخیره داده‌ها در localStorage
   const saveToLocalStorage = (data: any) => {
     try {
       const storageData = {
@@ -41,30 +39,24 @@ const WaitingPage: React.FC = () => {
         page: 'waiting',
         savedAt: new Date().toISOString()
       };
-      
-      // ذخیره در چندین کلید برای اطمینان
       localStorage.setItem('exchangeData', JSON.stringify(storageData));
       localStorage.setItem('exchangeWaitingData', JSON.stringify(storageData));
       localStorage.setItem('lastExchangeData', JSON.stringify(storageData));
       localStorage.setItem('currentTransaction', JSON.stringify(storageData));
       
-      console.log('💾 Data saved to localStorage from WaitingPage:', storageData);
     } catch (error) {
-      console.error('❌ Error saving to localStorage:', error);
+      console.error(' Error saving to localStorage:', error);
     }
   };
 
-  // تابع بازیابی داده‌ها از localStorage
   const loadFromLocalStorage = () => {
     try {
-      // اول از کلید currentTransaction چک کن (جدیدترین)
       const currentData = localStorage.getItem('currentTransaction');
       if (currentData) {
         const parsedData = JSON.parse(currentData);
         const isRecent = new Date().getTime() - parsedData.timestamp < 5 * 60 * 1000; // 5 دقیقه
         
         if (isRecent && parsedData.fromAmount) {
-          console.log('🎯 Loading from currentTransaction:', parsedData);
           setDisplayData({
             fromAmount: parsedData.fromAmount || "100",
             fromCurrency: parsedData.fromCurrency || "tether",
@@ -74,19 +66,13 @@ const WaitingPage: React.FC = () => {
           return true;
         }
       }
-      
-      // اگر currentTransaction نبود، از کلید اصلی چک کن
       const savedData = localStorage.getItem('exchangeData');
-      console.log('🔍 Checking localStorage for exchangeData');
       
       if (savedData) {
         const parsedData = JSON.parse(savedData);
-        
-        // اگر داده‌ها کمتر از 5 دقیقه پیش ذخیره شده‌اند، استفاده کن
         const isRecent = new Date().getTime() - parsedData.timestamp < 5 * 60 * 1000;
         
         if (isRecent && parsedData.fromAmount) {
-          console.log('🔄 Loading from localStorage:', parsedData);
           setDisplayData({
             fromAmount: parsedData.fromAmount || "100",
             fromCurrency: parsedData.fromCurrency || "tether",
@@ -96,8 +82,6 @@ const WaitingPage: React.FC = () => {
           return true;
         }
       }
-      
-      // اگر در کلید اصلی نبود، از کلیدهای دیگر جستجو کن
       const backupKeys = ['exchangeWaitingData', 'lastExchangeData', 'exchangeReceiveData', 'exchangeFlowData'];
       
       for (const key of backupKeys) {
@@ -107,7 +91,6 @@ const WaitingPage: React.FC = () => {
           if (parsedData.fromAmount && parsedData.timestamp) {
             const isRecent = new Date().getTime() - parsedData.timestamp < 5 * 60 * 1000;
             if (isRecent) {
-              console.log(`🔁 Loading from backup key ${key}:`, parsedData);
               setDisplayData({
                 fromAmount: parsedData.fromAmount || "100",
                 fromCurrency: parsedData.fromCurrency || "tether",
@@ -120,20 +103,13 @@ const WaitingPage: React.FC = () => {
         }
       }
     } catch (error) {
-      console.error('❌ Error loading from localStorage:', error);
+      console.error(' Error loading from localStorage:', error);
     }
     return false;
   };
 
   useEffect(() => {
-    console.log('🚀 WaitingPage mounted');
-    console.log('📍 Location state:', location.state);
-    console.log('📊 Current exchangeState:', exchangeState);
-    
-    // 1. اول از location.state چک کن (جدیدترین داده از صفحه قبلی)
-    if (location.state?.transactionData) {
-      console.log('🎯 Using data from location state:', location.state.transactionData);
-      
+    if (location.state?.transactionData) {      
       const transactionData = location.state.transactionData;
       setDisplayData({
         fromAmount: transactionData.fromAmount || "100",
@@ -141,39 +117,28 @@ const WaitingPage: React.FC = () => {
         toAmount: transactionData.toAmount || "120",
         toCurrency: transactionData.toCurrency || "permoney"
       });
-      
-      // ذخیره این داده در localStorage
       saveToLocalStorage(transactionData);
       setIsHydrated(true);
       return;
     }
-    
-    // 2. اگر location.state نبود، از localStorage بارگذاری کن
     const dataLoaded = loadFromLocalStorage();
-    
-    // 3. اگر در localStorage داده‌ای نبود ولی در Redux هست، از Redux استفاده کن و ذخیره کن
-    if (!dataLoaded && exchangeState.fromAmount && exchangeState.toAmount) {
-      console.log('📝 Using data from Redux:', exchangeState);
-      
+    if (!dataLoaded && exchangeState.fromAmount && exchangeState.toAmount) {      
       const newData = {
         fromAmount: exchangeState.fromAmount,
         fromCurrency: exchangeState.fromCurrency || "tether",
         toAmount: exchangeState.toAmount,
         toCurrency: exchangeState.toCurrency || "permoney"
       };
-      
       setDisplayData(newData);
       saveToLocalStorage(newData);
     } else if (dataLoaded) {
-      console.log('✅ Using data from localStorage');
+      console.log(' Using data from localStorage');
     } else {
-      console.log('⚠️ Using default data');
+      console.log(' Using default data');
       saveToLocalStorage(displayData);
     }
     
     setIsHydrated(true);
-    
-    // ذخیره داده‌ها در localStorage هر بار که exchangeState تغییر می‌کند
     const saveData = () => {
       if (exchangeState.fromAmount || exchangeState.toAmount) {
         saveToLocalStorage({
@@ -186,10 +151,7 @@ const WaitingPage: React.FC = () => {
     };
     
     saveData();
-    
-    // ذخیره داده‌ها هنگام بسته شدن صفحه
     const handleBeforeUnload = () => {
-      console.log('💾 Saving before unload');
       saveToLocalStorage(displayData);
     };
     
@@ -199,45 +161,30 @@ const WaitingPage: React.FC = () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [exchangeState, location.state]);
-
-  // تابع برای هدایت به صفحه Success
   const handleSuccessClick = () => {
-    // ذخیره نهایی قبل از ناوبری
     saveToLocalStorage(displayData);
-    
-    // ذخیره اضافی برای صفحه بعدی
-    const dataForNextPage = {
+        const dataForNextPage = {
       ...displayData,
       timestamp: new Date().getTime(),
       savedFrom: 'waiting-success-click'
     };
     
     localStorage.setItem('lastExchangeData', JSON.stringify(dataForNextPage));
-    
-    // ارسال داده به صفحه بعدی
-    navigate("/pmsuccess", { 
+        navigate("/pmsuccess", { 
       state: { 
         transactionData: displayData 
       } 
     });
   };
-
-  // تابع برای هدایت به صفحه Failed
   const handleFailedClick = () => {
-    // ذخیره نهایی قبل از ناوبری
     saveToLocalStorage(displayData);
-    
-    // ذخیره اضافی برای صفحه بعدی
-    const dataForNextPage = {
+        const dataForNextPage = {
       ...displayData,
       timestamp: new Date().getTime(),
       savedFrom: 'waiting-failed-click'
     };
-    
     localStorage.setItem('lastExchangeData', JSON.stringify(dataForNextPage));
-    
-    // ارسال داده به صفحه بعدی
-    navigate("/pmfailed", { 
+        navigate("/pmfailed", { 
       state: { 
         transactionData: displayData 
       } 
@@ -275,8 +222,6 @@ const WaitingPage: React.FC = () => {
       return "Perfect Money";
     }
   };
-
-  // اگر هنوز داده‌ها بارگذاری نشده، اسکلت نشان بده
   if (!isHydrated) {
     return (
       <ContainerConfirm sx={{ height: "667px" }}>

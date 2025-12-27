@@ -17,7 +17,6 @@ function DashboardLayout() {
   return (
     <CardContainerDashboard>
       <CardSideBarDashboard>
-        {/* لینک داشبورد */}
         <Link to="/dashboard" style={{ textDecoration: 'none', color: 'inherit' }}>
           <CardDetailSideBar >
             <Home />
@@ -25,7 +24,6 @@ function DashboardLayout() {
           </CardDetailSideBar>
         </Link>
 
-        {/* لینک پروفایل */}
         <Link to="/dashboard/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
           <CardDetailSideBar >
             <User />
@@ -33,7 +31,6 @@ function DashboardLayout() {
           </CardDetailSideBar>
         </Link>
 
-        {/* لینک پارتنر پروگرام */}
         <Link to="/dashboard/partner" style={{ textDecoration: 'none', color: 'inherit' }}>
           <CardDetailSideBar >
             <Partner />
@@ -41,14 +38,12 @@ function DashboardLayout() {
           </CardDetailSideBar>
         </Link>
 
-        {/* خروج */}
         <CardDetailSideBar>
           <Exist />
           <TypographySideBar>Exit</TypographySideBar>
         </CardDetailSideBar>
       </CardSideBarDashboard>
 
-      {/* محتوای صفحات مختلف */}
       <Outlet />
     </CardContainerDashboard>
   );

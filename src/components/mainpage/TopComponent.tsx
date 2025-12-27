@@ -1,4 +1,3 @@
-// components/TopComponent.tsx
 import React from "react";
 import { ContainerRoot } from "../styled/HompageStylee";
 import {
@@ -38,19 +37,17 @@ const CustomConnector = styled(StepConnector)(() => ({
 
 const TopComponent: React.FC = () => {
   const location = useLocation();
-
-  // تعیین activeStep بر اساس مسیر جاری
   const getActiveStep = (): number => {
     const path = location.pathname;
 
-    if (path === "/" || path === "/exchange") return 0; // صفحه اصلی
+    if (path === "/" || path === "/exchange") return 0; 
     if (path === "/confirm") return 1;
-    if (path === "/flow/send" || path === "/flow/receive") return 2; // Flow pages
-    if (path === "/success" || path === "/complete") return 3; // صفحه success یا complete
-    if (path === "/failed") return 2; // اگر failed برگردد به مرحله 2
-    if (path === "/waiting") return 2; // اگر failed برگردد به مرحله 2
-    if (path === "/pmsuccess") return 2; // اگر failed برگردد به مرحله 2
-    if (path === "/pmfailed") return 2; // اگر failed برگردد به مرحله 2
+    if (path === "/flow/send" || path === "/flow/receive") return 2; 
+    if (path === "/success" || path === "/complete") return 3; 
+    if (path === "/failed") return 2; 
+    if (path === "/waiting") return 2; 
+    if (path === "/pmsuccess") return 2; 
+    if (path === "/pmfailed") return 2;  
 
     return 0;
   };
@@ -71,7 +68,7 @@ const TopComponent: React.FC = () => {
           <Stepper activeStep={activeStep} connector={<CustomConnector />}>
             {steps.map((step) => {
               const isActive = activeStep === step.number - 1;
-              const isCompleted = activeStep >= step.number; // تغییر اینجا
+              const isCompleted = activeStep >= step.number; 
 
               return (
                 <Step key={step.number}>

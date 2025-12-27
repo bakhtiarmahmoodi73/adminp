@@ -25,18 +25,15 @@ const initialState: AuthState = {
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials: { email: string; password: string }) => {
-    // اعتبارسنجی ساده: هر ایمیل و رمزی که وارد شود قبول است
-    // (در محیط واقعی باید با API چک شود)
     const isValidEmail = (email: string) => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(email);
     };
     
     const isValidPassword = (password: string) => {
-      return password.length >= 6; // حداقل 6 کاراکتر
+      return password.length >= 6;  
     };
     
-    // اعتبارسنجی ایمیل و رمز
     if (!isValidEmail(credentials.email)) {
       throw new Error('Please enter a valid email address');
     }
@@ -44,15 +41,13 @@ export const loginUser = createAsyncThunk(
     if (!isValidPassword(credentials.password)) {
       throw new Error('Password must be at least 6 characters long');
     }
-    
-    // شبیه‌سازی پاسخ API
-    const response = await new Promise<{ user: User; token: string }>((resolve) => {
+        const response = await new Promise<{ user: User; token: string }>((resolve) => {
       setTimeout(() => {
         resolve({
           user: { 
-            id: Date.now().toString(), // ID یکتا
+            id: Date.now().toString(), 
             email: credentials.email, 
-            name: credentials.email.split('@')[0] // نام از ایمیل استخراج می‌شود
+            name: credentials.email.split('@')[0] 
           },
           token: 'mock-jwt-token-' + Date.now()
         });
@@ -80,7 +75,6 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    // افزودن reducer برای بارگذاری کاربر از localStorage
     loadUserFromStorage: (state) => {
       const token = localStorage.getItem('token');
       const userStr = localStorage.getItem('user');

@@ -1,4 +1,3 @@
-// store/slices/forgotPasswordSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export interface ForgotPasswordState {
@@ -16,23 +15,7 @@ const initialState: ForgotPasswordState = {
 export const sendResetPasswordEmail = createAsyncThunk(
   'forgotPassword/sendResetPasswordEmail',
   async (email: string) => {
-    // شبیه‌سازی API call
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // در اینجا باید API واقعی را فراخوانی کنید
-    // const response = await fetch('/api/auth/forgot-password', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ email }),
-    // });
-    
-    // if (!response.ok) {
-    //   throw new Error('Failed to send reset password email');
-    // }
-    
-    // return await response.json();
-    
-    // برای نمونه:
     if (email.includes('@')) {
       return { success: true, message: 'Email sent successfully' };
     } else {

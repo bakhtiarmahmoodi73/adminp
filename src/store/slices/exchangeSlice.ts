@@ -1,4 +1,3 @@
-// store/slices/exchangeSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ExchangeState, ExchangeFormData } from '../../types/exchange';
 

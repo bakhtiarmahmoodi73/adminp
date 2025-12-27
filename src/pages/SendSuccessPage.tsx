@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import {
   BoxConfirmDetail,
   BoxConfirmRoot,
@@ -29,14 +29,9 @@ function SendSuccessPage() {
     toCurrency: "permoney"
   });
 
-  // تابع برای ذخیره فوری داده‌ها از location.state
   const saveDataFromLocationState = () => {
     if (location.state) {
-      console.log('📍 Location state available:', location.state);
-      
-      // از state با کلیدهای مختلف تلاش کن
       const possibleDataKeys = ['exchangeData', 'transactionData', 'data'];
-      
       for (const key of possibleDataKeys) {
         if (location.state[key]) {
           const data = location.state[key];
@@ -48,8 +43,6 @@ function SendSuccessPage() {
             timestamp: new Date().getTime(),
             savedFrom: `location-state-${key}`
           };
-          
-          // ذخیره در چندین کلید
           localStorage.setItem('exchangeData', JSON.stringify(dataToSave));
           localStorage.setItem('lastSuccessfulExchange', JSON.stringify(dataToSave));
           localStorage.setItem('successPageData', JSON.stringify(dataToSave));
@@ -63,20 +56,16 @@ function SendSuccessPage() {
     }
     return false;
   };
-
-  // تابع برای بازیابی از localStorage
   const loadFromLocalStorage = () => {
     console.log('🔄 SendSuccessPage: Loading from localStorage...');
-    
-    // اولویت‌های مختلف برای بارگذاری
-    const priorityKeys = [
-      'currentSuccessTransaction', // جدیدترین تراکنش موفق
-      'lastSuccessfulExchange',    // آخرین تراکنش موفق
-      'successPageData',           // داده‌های صفحه موفقیت
-      'exchangeData',              // داده‌های اصلی
-      'lastExchangeData',          // آخرین داده‌های تبادل
-      'exchangeFlowData',          // داده‌های از FlowSend
-      'backupExchangeData'         // داده‌های پشتیبان
+        const priorityKeys = [
+      'currentSuccessTransaction', 
+      'lastSuccessfulExchange',    
+      'successPageData',           
+      'exchangeData',              
+      'lastExchangeData',          
+      'exchangeFlowData',         
+      'backupExchangeData'       
     ];
     
     let latestData = null;
@@ -88,7 +77,6 @@ function SendSuccessPage() {
         if (dataStr) {
           const data = JSON.parse(dataStr);
           if (data.fromAmount && data.timestamp) {
-            // بررسی تازگی داده (تا 1 ساعت قبل)
             const isRecent = new Date().getTime() - data.timestamp < 60 * 60 * 1000;
             if (isRecent && data.timestamp > latestTimestamp) {
               latestTimestamp = data.timestamp;
@@ -98,7 +86,7 @@ function SendSuccessPage() {
           }
         }
       } catch (error) {
-        console.error(`⚠️ Error reading ${key}:`, error);
+        console.error(` Error reading ${key}:`, error);
       }
     }
     
@@ -109,12 +97,9 @@ function SendSuccessPage() {
         toAmount: latestData.toAmount || "120",
         toCurrency: latestData.toCurrency || "permoney"
       });
-      console.log('✅ Loaded from localStorage:', latestData);
       return true;
     }
-    
-    // چک کردن Redux
-    if (exchangeState.fromAmount && exchangeState.toAmount) {
+        if (exchangeState.fromAmount && exchangeState.toAmount) {
       console.log('📊 Using data from Redux:', exchangeState);
       const dataToSave = {
         fromAmount: exchangeState.fromAmount,
@@ -134,20 +119,10 @@ function SendSuccessPage() {
   };
 
   useEffect(() => {
-    console.log('🚀 SendSuccessPage mounted');
-    console.log('📊 exchangeState:', exchangeState);
-    console.log('📍 location state:', location.state);
-    
-    // اول از location.state تلاش کن
-    const locationDataLoaded = saveDataFromLocationState();
-    
-    // اگر location.state نداشت، از localStorage بارگذاری کن
-    if (!locationDataLoaded) {
+        const locationDataLoaded = saveDataFromLocationState();
+        if (!locationDataLoaded) {
       const storageDataLoaded = loadFromLocalStorage();
-      
-      // اگر هیچ داده‌ای پیدا نشد و صفحه تازه لود شده، به صفحه اصلی برگرد
-      if (!storageDataLoaded && !location.state && Object.keys(exchangeState).length === 0) {
-        console.log('🔙 No data found, redirecting to home...');
+            if (!storageDataLoaded && !location.state && Object.keys(exchangeState).length === 0) {
         setTimeout(() => {
           navigate('/');
         }, 1000);
@@ -155,12 +130,8 @@ function SendSuccessPage() {
     }
     
     setIsHydrated(true);
-    
-    // ذخیره stepper status
     localStorage.setItem("stepperStatus", "complete");
-    
-    // ذخیره داده‌ها هنگام بسته شدن صفحه
-    const handleBeforeUnload = () => {
+        const handleBeforeUnload = () => {
       localStorage.setItem('lastSuccessfulExchange', JSON.stringify({
         ...displayData,
         timestamp: new Date().getTime(),
@@ -206,8 +177,6 @@ function SendSuccessPage() {
       return "Perfect Money";
     }
   };
-
-  // اگر هنوز داده‌ها بارگذاری نشده، اسکلت نشان بده
   if (!isHydrated) {
     return (
       <ContainerConfirm sx={{ height: "864px", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

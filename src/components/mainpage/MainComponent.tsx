@@ -1,4 +1,3 @@
-// components/mainpage/MainComponent.tsx
 import React, { ChangeEvent } from "react";
 import {
   ButtonMain,
@@ -36,73 +35,50 @@ const MainComponent: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  // خواندن state از Redux
   const { fromCurrency, toCurrency, fromAmount, toAmount } = useAppSelector(
     (state) => state.exchange
   );
 
-  // تابع محاسبه مقدار مقصد بر اساس نوع تبدیل
   const calculateToAmount = (amount: string, fromCurr: string, toCurr: string): string => {
     if (!amount) return "";
     
     const numAmount = parseFloat(amount);
-    
-    // اگر از تتر به پرفکت مانی تبدیل می‌کنیم، تقسیم بر ۲
-    if (fromCurr === "tether" && toCurr === "permoney") {
+        if (fromCurr === "tether" && toCurr === "permoney") {
       return (numAmount / 2).toFixed(2);
     }
-    
-    // اگر از پرفکت مانی به تتر تبدیل می‌کنیم، ضرب در ۲
-    if (fromCurr === "permoney" && toCurr === "tether") {
+        if (fromCurr === "permoney" && toCurr === "tether") {
       return (numAmount * 2).toFixed(2);
     }
     
-    // برای تبدیل‌های دیگر از نرخ عادی (همان ارز به همان ارز)
     return numAmount.toFixed(2);
   };
 
-  // تابع محاسبه مقدار مبدا بر اساس مقدار مقصد
   const calculateFromAmount = (amount: string, fromCurr: string, toCurr: string): string => {
     if (!amount) return "";
     
     const numAmount = parseFloat(amount);
     
-    // اگر از تتر به پرفکت مانی تبدیل می‌کنیم، مبدا باید ضرب در ۲ باشد
     if (fromCurr === "tether" && toCurr === "permoney") {
       return (numAmount * 2).toFixed(2);
     }
-    
-    // اگر از پرفکت مانی به تتر تبدیل می‌کنیم، مبدا باید تقسیم بر ۲ باشد
-    if (fromCurr === "permoney" && toCurr === "tether") {
+        if (fromCurr === "permoney" && toCurr === "tether") {
       return (numAmount / 2).toFixed(2);
     }
     
-    // برای تبدیل‌های دیگر از نرخ عادی (همان ارز به همان ارز)
     return numAmount.toFixed(2);
   };
 
-  // تابع برای جابجا کردن ارزها
   const handleSwap = () => {
-    // ذخیره مقادیر فعلی
     const currentFromAmount = fromAmount;
     const currentToAmount = toAmount;
-    
-    // جابجایی ارزها در Redux
     dispatch(swapCurrencies());
-    
-    // جابجایی مقادیر عددی
-    dispatch(setFromAmount(currentToAmount));
+        dispatch(setFromAmount(currentToAmount));
     dispatch(setToAmount(currentFromAmount));
   };
-
-  // تابع برای تغییر مقدار From
   const handleFromAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // فقط اعداد و نقطه اعشار مجاز هستند
     if (value === "" || /^\d*\.?\d*$/.test(value)) {
       dispatch(setFromAmount(value));
-
-      // محاسبه خودکار مبلغ مقصد
       if (value) {
         const calculatedAmount = calculateToAmount(value, fromCurrency, toCurrency);
         dispatch(setToAmount(calculatedAmount));
@@ -111,16 +87,11 @@ const MainComponent: React.FC = () => {
       }
     }
   };
-
-  // تابع برای تغییر مقدار To
   const handleToAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // فقط اعداد و نقطه اعشار مجاز هستند
     if (value === "" || /^\d*\.?\d*$/.test(value)) {
       dispatch(setToAmount(value));
-      
-      // محاسبه خودکار مبلغ مبدا
-      if (value) {
+            if (value) {
         const calculatedAmount = calculateFromAmount(value, fromCurrency, toCurrency);
         dispatch(setFromAmount(calculatedAmount));
       } else {
@@ -128,14 +99,10 @@ const MainComponent: React.FC = () => {
       }
     }
   };
-
-  // تابع برای تغییر ارز From
   const handleFromCurrencyChange = (e: SelectChangeEvent<string>) => {
     const newFromCurrency = e.target.value;
     dispatch(setFromCurrency(newFromCurrency));
-    
-    // محاسبه مجدد وقتی ارز مبدا تغییر می‌کند
-    if (fromAmount) {
+        if (fromAmount) {
       const calculatedAmount = calculateToAmount(fromAmount, newFromCurrency, toCurrency);
       dispatch(setToAmount(calculatedAmount));
     } else if (toAmount) {
@@ -143,14 +110,10 @@ const MainComponent: React.FC = () => {
       dispatch(setFromAmount(calculatedAmount));
     }
   };
-
-  // تابع برای تغییر ارز To
   const handleToCurrencyChange = (e: SelectChangeEvent<string>) => {
     const newToCurrency = e.target.value;
     dispatch(setToCurrency(newToCurrency));
-    
-    // محاسبه مجدد وقتی ارز مقصد تغییر می‌کند
-    if (fromAmount) {
+        if (fromAmount) {
       const calculatedAmount = calculateToAmount(fromAmount, fromCurrency, newToCurrency);
       dispatch(setToAmount(calculatedAmount));
     } else if (toAmount) {
@@ -159,9 +122,7 @@ const MainComponent: React.FC = () => {
     }
   };
 
-  // تابع برای رفتن به صفحه Confirm
   const handleMakeExchange = () => {
-    // اعتبارسنجی اولیه
     if (!fromAmount || parseFloat(fromAmount) < 100) {
       alert("Please enter a valid amount (minimum $100)");
       return;
@@ -171,8 +132,6 @@ const MainComponent: React.FC = () => {
       alert("Maximum amount is $4832");
       return;
     }
-
-    // ذخیره اطلاعات فرم در Redux
     dispatch(setExchangeFormData({
       fromCurrency,
       toCurrency,
@@ -180,16 +139,12 @@ const MainComponent: React.FC = () => {
       toAmount,
     }));
 
-    // تغییر step به 2 (Confirm)
     dispatch(setStep(2));
-
-    // هدایت به صفحه تأیید
     navigate("/confirm");
   };
 
   return (
     <Box sx={{ position: "relative", width: "100%" }}>
-      {/* کارت بالا (From) */}
       <CardMainTop>
         <TypographyMain>From:</TypographyMain>
         <TextFieldMainTop
@@ -257,8 +212,6 @@ const MainComponent: React.FC = () => {
           Min : $100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Max: $4832
         </TypographyMain>
       </CardMainTop>
-
-      {/* دکمه تغییر */}
       <Box
         sx={{
           position: "absolute",
@@ -270,8 +223,6 @@ const MainComponent: React.FC = () => {
           <Change />
         </ChangeButtonComponent>
       </Box>
-
-      {/* کارت پایین (To) */}
       <CardMainBottm>
         <TypographyMain>To:</TypographyMain>
         <TextFieldMainTop

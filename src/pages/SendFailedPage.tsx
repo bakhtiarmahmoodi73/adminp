@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   BoxConfirmDetail,
   BoxConfirmRoot,
@@ -30,14 +30,9 @@ function SendFailedPage() {
     toCurrency: "permoney"
   });
 
-  // تابع بارگذاری داده‌ها از همه منابع
   const loadDataFromAllSources = () => {
-    console.log('🔄 SendFailedPage: Loading data from all sources...');
-    
-    // 1. اول از location.state چک کن (اگر از FlowSendPage یا WaitingPage آمده‌ای)
-    if (location.state?.transactionData || location.state?.exchangeData) {
+        if (location.state?.transactionData || location.state?.exchangeData) {
       const transactionData = location.state.transactionData || location.state.exchangeData;
-      console.log('🎯 SendFailedPage: Using data from location state:', transactionData);
       
       const dataToSave = {
         fromAmount: transactionData.fromAmount || "100",
@@ -47,18 +42,14 @@ function SendFailedPage() {
         timestamp: new Date().getTime(),
         savedFrom: 'location-state'
       };
-      
-      // ذخیره در localStorage برای استفاده بعدی
-      localStorage.setItem('lastFailedExchange', JSON.stringify(dataToSave));
+            localStorage.setItem('lastFailedExchange', JSON.stringify(dataToSave));
       localStorage.setItem('currentFailedTransaction', JSON.stringify(dataToSave));
       localStorage.setItem('exchangeData', JSON.stringify(dataToSave));
       
       setDisplayData(dataToSave);
       return true;
     }
-    
-    // 2. از localStorage با اولویت‌های مختلف چک کن
-    const priorityKeys = [
+        const priorityKeys = [
       'lastFailedExchange',
       'currentFailedTransaction',
       'lastExchangeData',
@@ -78,17 +69,15 @@ function SendFailedPage() {
         if (dataStr) {
           const data = JSON.parse(dataStr);
           if (data.fromAmount && data.timestamp) {
-            // بررسی تازگی داده (تا 1 ساعت قبل)
             const isRecent = new Date().getTime() - data.timestamp < 60 * 60 * 1000;
             if (isRecent && data.timestamp > latestTimestamp) {
               latestTimestamp = data.timestamp;
               latestData = data;
-              console.log(`📦 SendFailedPage: Found recent data in ${key}:`, data);
             }
           }
         }
       } catch (error) {
-        console.error(`⚠️ SendFailedPage: Error reading ${key}:`, error);
+        console.error(` SendFailedPage: Error reading ${key}:`, error);
       }
     }
     
@@ -99,13 +88,9 @@ function SendFailedPage() {
         toAmount: latestData.toAmount || "120",
         toCurrency: latestData.toCurrency || "permoney"
       });
-      console.log('✅ SendFailedPage: Loaded from localStorage:', latestData);
       return true;
     }
-    
-    // 3. از Redux چک کن
-    if (exchangeState.fromAmount && exchangeState.toAmount) {
-      console.log('📝 SendFailedPage: Using data from Redux:', exchangeState);
+        if (exchangeState.fromAmount && exchangeState.toAmount) {
       const dataToSave = {
         fromAmount: exchangeState.fromAmount,
         fromCurrency: exchangeState.fromCurrency || "tether",
@@ -120,22 +105,13 @@ function SendFailedPage() {
       return true;
     }
     
-    console.log('⚠️ SendFailedPage: No recent data found, using defaults');
     return false;
   };
 
   useEffect(() => {
-    console.log('🚀 SendFailedPage mounted');
-    console.log('📊 exchangeState:', exchangeState);
-    console.log('📍 location state:', location.state);
-    
-    // بارگذاری داده‌ها
     const dataLoaded = loadDataFromAllSources();
-    
-    // اگر هیچ داده‌ای پیدا نشد و صفحه تازه لود شده
-    if (!dataLoaded && !location.state && Object.keys(exchangeState).length === 0) {
+        if (!dataLoaded && !location.state && Object.keys(exchangeState).length === 0) {
       console.log('🔙 SendFailedPage: No data found, using defaults');
-      // ذخیره داده‌های پیش‌فرض
       const defaultData = {
         ...displayData,
         timestamp: new Date().getTime(),
@@ -145,12 +121,8 @@ function SendFailedPage() {
     }
     
     setIsHydrated(true);
-    
-    // ذخیره stepper status
-    localStorage.setItem("stepperStatus", "complete");
-    
-    // ذخیره داده‌های فعلی در localStorage
-    const saveCurrentData = () => {
+        localStorage.setItem("stepperStatus", "complete");
+        const saveCurrentData = () => {
       const dataToSave = {
         ...displayData,
         timestamp: new Date().getTime(),
@@ -163,10 +135,7 @@ function SendFailedPage() {
     };
     
     saveCurrentData();
-    
-    // ذخیره هنگام بسته شدن صفحه
-    const handleBeforeUnload = () => {
-      console.log('💾 SendFailedPage: Saving before unload');
+        const handleBeforeUnload = () => {
       saveCurrentData();
     };
     
@@ -176,23 +145,16 @@ function SendFailedPage() {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [exchangeState, location.state]);
-
-  // تابع برای بازگشت به استپ اول
   const handleTryAgain = () => {
-    // پاک کردن وضعیت stepper از localStorage
     localStorage.removeItem("stepperStatus");
-    
-    // پاک کردن داده‌های تراکنش قدیمی
-    localStorage.removeItem('exchangeData');
+      localStorage.removeItem('exchangeData');
     localStorage.removeItem('exchangeWaitingData');
     localStorage.removeItem('lastExchangeData');
     localStorage.removeItem('currentTransaction');
     localStorage.removeItem('currentFailedTransaction');
     localStorage.removeItem('lastFailedExchange');
     localStorage.removeItem('exchangeFlowData');
-    
-    // هدایت کاربر به صفحه اصلی
-    navigate("/");
+        navigate("/");
   };
 
   const getSendIcon = () => {
@@ -226,8 +188,6 @@ function SendFailedPage() {
       return "Perfect Money";
     }
   };
-
-  // اگر هنوز داده‌ها بارگذاری نشده، اسکلت نشان بده
   if (!isHydrated) {
     return (
       <ContainerConfirm sx={{ height: "684px", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

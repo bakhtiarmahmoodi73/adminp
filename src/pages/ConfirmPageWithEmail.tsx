@@ -1,4 +1,3 @@
-// pages/ConfirmPageWithEmail.tsx
 import { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import { z } from 'zod';
@@ -40,13 +39,9 @@ function ConfirmPageWithEmail() {
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [isHydrated, setIsHydrated] = useState<boolean>(false);
   
-  // تعیین اینکه آیا باید فیلد ایمیل نمایش داده شود
   const shouldShowEmailField = !(isAuthenticated && user?.email);
   
-  // تعیین height بر اساس وضعیت
   const containerHeight = shouldShowEmailField ? "909px" : "819px";
-
-  // تابع ذخیره داده‌ها در localStorage
   const saveToLocalStorage = () => {
     const storageData = {
       fromCurrency: exchangeState.fromCurrency,
@@ -59,18 +54,13 @@ function ConfirmPageWithEmail() {
     localStorage.setItem('exchangeData', JSON.stringify(storageData));
   };
 
-  // تابع بازیابی داده‌ها از localStorage
   const loadFromLocalStorage = () => {
     const savedData = localStorage.getItem('exchangeData');
     if (savedData) {
       try {
         const parsedData = JSON.parse(savedData);
-        // اگر داده‌ها کمتر از 10 دقیقه پیش ذخیره شده‌اند، استفاده کن
         const isRecent = new Date().getTime() - parsedData.timestamp < 10 * 60 * 1000;
-        if (isRecent && parsedData.fromAmount) {
-          // اگر کاربر لاگین شده و ایمیل متفاوت است، ایمیل را از localStorage استفاده نکن
-          const emailToUse = isAuthenticated && user?.email ? user.email : parsedData.email;
-          
+        if (isRecent && parsedData.fromAmount) {          
           dispatch(setExchangeFormData({
             fromCurrency: parsedData.fromCurrency,
             toCurrency: parsedData.toCurrency,
@@ -87,19 +77,13 @@ function ConfirmPageWithEmail() {
       }
     }
   };
-
-  // تابع پاک کردن داده‌های localStorage
   const clearLocalStorage = () => {
     localStorage.removeItem('exchangeData');
   };
-
-  // تابع اعتبارسنجی با Zod
   const validateForm = (values: ConfirmFormData) => {
     const errors: Partial<ConfirmFormData> = {};
 
-    // اعتبارسنجی ایمیل فقط اگر باید نمایش داده شود - با استفاده از Zod
     if (shouldShowEmailField) {
-      // ایجاد Zod schema برای ایمیل
       const emailSchema = z.string()
         .min(1, 'Email is required')
         .email('Please enter a valid email address');
@@ -110,12 +94,6 @@ function ConfirmPageWithEmail() {
         errors.email = result.error.issues[0]?.message || 'Invalid email';
       }
     }
-
-    // اعتبارسنجی چک‌باکس (همانند کد اصلی)
-    if (!values.agreedToTerms) {
-      // errors.agreedToTerms = 'You must agree to the terms and conditions';
-    }
-
     return errors;
   };
 
@@ -140,27 +118,20 @@ function ConfirmPageWithEmail() {
 
         console.log('Submitting form data:', formData);
         
-        // ذخیره داده‌ها قبل از ارسال
         saveToLocalStorage();
         
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // تعیین به کدام صفحه هدایت شود بر اساس نوع exchange
         if (exchangeState.fromCurrency === 'tether' && exchangeState.toCurrency === 'permoney') {
-          // تتر به پرفکت مانی -> نمایش فلو send
           navigate('/flow/send');
         } else if (exchangeState.fromCurrency === 'permoney' && exchangeState.toCurrency === 'tether') {
-          // پرفکت مانی به تتر -> نمایش فلو receive
           navigate('/flow/receive');
         } else {
-          // حالت پیش‌فرض
           navigate('/complete');
         }
         
-        // تغییر step به 3 (Complete)
         dispatch(setStep(3));
         
-        // پاک کردن localStorage پس از ارسال موفق
         clearLocalStorage();
         
         setShowSuccess(true);
@@ -203,21 +174,16 @@ function ConfirmPageWithEmail() {
   };
 
   useEffect(() => {
-    // بارگذاری داده‌ها از localStorage
     loadFromLocalStorage();
     setIsHydrated(true);
-    
-    // ذخیره داده‌ها در localStorage هر بار که exchangeState تغییر می‌کند
-    const saveData = () => {
+        const saveData = () => {
       if (exchangeState.fromAmount || exchangeState.toAmount) {
         saveToLocalStorage();
       }
     };
     
     saveData();
-    
-    // ذخیره داده‌ها هنگام بسته شدن صفحه
-    const handleBeforeUnload = () => {
+        const handleBeforeUnload = () => {
       saveToLocalStorage();
     };
     
@@ -234,7 +200,6 @@ function ConfirmPageWithEmail() {
     }
   }, [isAuthenticated, user]);
 
-  // تعیین آیکون و متن بر اساس ارز
   const getSendIcon = () => {
     if (exchangeState.fromCurrency === 'tether') {
       return <Tether />;
@@ -267,7 +232,6 @@ function ConfirmPageWithEmail() {
     }
   };
 
-  // اگر هنوز داده‌ها بارگذاری نشده، اسکلت نشان بده
   if (!isHydrated) {
     return (
       <ContainerConfirm sx={{ height: containerHeight }}>
@@ -311,8 +275,6 @@ function ConfirmPageWithEmail() {
       <Box sx={{ mt: "34px" }}>
         <Line style={{ width: "100%", display: "block" }} />
       </Box>
-
-      {/* بخش ایمیل با منطق شرطی */}
       {shouldShowEmailField && (
         <BoxConfirmRoot sx={{ mt: "16px" }}>
           <TypographyDetail sx={{ fontSize: "16px" }}>Email :</TypographyDetail>
@@ -329,8 +291,7 @@ function ConfirmPageWithEmail() {
             disabled={formik.isSubmitting}
           />
           
-          {/* پیام راهنما */}
-          {isAuthenticated && !user?.email && (
+                    {isAuthenticated && !user?.email && (
             <TypographyDetail sx={{ 
               fontSize: "12px", 
               color: "#60A7F8", 

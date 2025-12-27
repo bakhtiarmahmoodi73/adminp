@@ -17,7 +17,6 @@ import {
   TypographyContactDetail,
 } from "../components/styled/HompageStylee";
 
-// تعریف schema برای اعتبارسنجی با Zod
 const emailSchema = z.object({
   email: z
     .string()
@@ -45,16 +44,15 @@ type ContactFormData = {
   message: string;
 };
 
-function ContactUs() {
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [emailError, setEmailError] = useState("");
-  const [subjectError, setSubjectError] = useState("");
-  const [emailTouched, setEmailTouched] = useState(false);
-  const [subjectTouched, setSubjectTouched] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const ContactUs: React.FC = () => {
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [emailError, setEmailError] = useState<string>("");
+  const [subjectError, setSubjectError] = useState<string>("");
+  const [emailTouched, setEmailTouched] = useState<boolean>(false);
+  const [subjectTouched, setSubjectTouched] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // توابع اعتبارسنجی
-  const validateEmail = useCallback((value: string) => {
+  const validateEmail = useCallback((value: string): string => {
     const result = emailSchema.safeParse({ email: value });
     if (!result.success) {
       return result.error.issues[0]?.message || "Email is required";
@@ -62,7 +60,7 @@ function ContactUs() {
     return "";
   }, []);
 
-  const validateSubject = useCallback((value: string) => {
+  const validateSubject = useCallback((value: string): string => {
     const result = subjectSchema.safeParse({ subject: value });
     if (!result.success) {
       return result.error.issues[0]?.message || "Subject is required";
@@ -70,7 +68,7 @@ function ContactUs() {
     return "";
   }, []);
 
-  const validateMessage = useCallback((value: string) => {
+  const validateMessage = useCallback((value: string): string => {
     const result = messageSchema.safeParse({ message: value });
     if (!result.success) {
       return result.error.issues[0]?.message || "Message is required";
@@ -78,7 +76,6 @@ function ContactUs() {
     return "";
   }, []);
 
-  // Formik configuration
   const formik = useFormik<ContactFormData>({
     initialValues: {
       email: "",
@@ -93,7 +90,6 @@ function ContactUs() {
     onSubmit: async (values) => {
       let hasError = false;
       
-      // اعتبارسنجی Email
       if (!values.email.trim()) {
         setEmailTouched(true);
         const emailValidationError = validateEmail(values.email);
@@ -101,7 +97,6 @@ function ContactUs() {
         if (emailValidationError) hasError = true;
       }
       
-      // اعتبارسنجی Subject
       if (!values.subject.trim()) {
         setSubjectTouched(true);
         const subjectValidationError = validateSubject(values.subject);
@@ -109,33 +104,23 @@ function ContactUs() {
         if (subjectValidationError) hasError = true;
       }
       
-      // اعتبارسنجی Message
       if (!values.message.trim()) {
         const messageValidationError = validateMessage(values.message);
         if (messageValidationError) hasError = true;
       }
       
-      if (hasError) {
-        return;
-      }
+      if (hasError) return;
       
       setIsSubmitting(true);
-      
       try {
-        // شبیه‌سازی ارسال فرم
         console.log("Contact form data:", values);
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // نمایش پیام موفقیت
         setShowSuccess(true);
-        
-        // ریست فرم
         formik.resetForm();
         setEmailTouched(false);
         setSubjectTouched(false);
         setEmailError("");
         setSubjectError("");
-        
       } catch (error) {
         console.error("Form submission failed:", error);
       } finally {
@@ -144,7 +129,6 @@ function ContactUs() {
     },
   });
 
-  // Event handlers
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     formik.handleChange(e);
     if (emailTouched) {
@@ -192,74 +176,60 @@ function ContactUs() {
   };
 
   const handleMessageBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value.trim();
-    if (value !== "") {
-      // فقط برای اعتبارسنجی، در state ذخیره نمی‌شود
-    }
     formik.handleBlur(e);
   };
 
-  const handleClearEmail = (e: React.MouseEvent) => {
+  const handleClearEmail = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    
     formik.setFieldValue("email", "");
     setEmailTouched(false);
     setEmailError("");
   };
 
-  const handleClearSubject = (e: React.MouseEvent) => {
+  const handleClearSubject = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    
     formik.setFieldValue("subject", "");
     setSubjectTouched(false);
     setSubjectError("");
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
     let hasError = false;
-    
-    // اعتبارسنجی Email
+
     if (!formik.values.email.trim()) {
       setEmailTouched(true);
       const emailValidationError = validateEmail(formik.values.email);
       setEmailError(emailValidationError);
       if (emailValidationError) hasError = true;
     }
-    
-    // اعتبارسنجی Subject
+
     if (!formik.values.subject.trim()) {
       setSubjectTouched(true);
       const subjectValidationError = validateSubject(formik.values.subject);
       setSubjectError(subjectValidationError);
       if (subjectValidationError) hasError = true;
     }
-    
-    // اعتبارسنجی Message
+
     if (!formik.values.message.trim()) {
       const messageValidationError = validateMessage(formik.values.message);
       if (messageValidationError) hasError = true;
     }
-    
-    if (hasError) {
-      return;
-    }
-    
-    formik.handleSubmit();
+
+    if (!hasError) formik.handleSubmit();
   };
 
-  const handleCloseSuccess = () => {
+  const handleCloseSuccess = (_?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') return;
     setShowSuccess(false);
   };
 
   const hasEmailError = emailTouched && Boolean(emailError);
   const hasSubjectError = subjectTouched && Boolean(subjectError);
 
-  // استایل دکمه ضربدر
-  const iconButtonStyle = {
+  const iconButtonStyle: React.CSSProperties = {
     background: "none",
     border: "none",
     padding: 0,
@@ -290,7 +260,6 @@ function ContactUs() {
         </TypographyContactDetail>
 
         <Box component="form" onSubmit={handleFormSubmit} noValidate>
-          {/* فیلد Email */}
           <TypographyContactDetail sx={{ marginTop: "35px", lineHeight: "1.4" }}>
             Email :
           </TypographyContactDetail>
@@ -335,7 +304,6 @@ function ContactUs() {
             />
           </Box>
 
-          {/* فیلد Subject */}
           <TypographyContactDetail sx={{ marginTop: "15px", lineHeight: "1.4" }}>
             Subject :
           </TypographyContactDetail>
@@ -380,7 +348,6 @@ function ContactUs() {
             />
           </Box>
 
-          {/* فیلد Message */}
           <TypographyContactDetail sx={{ marginTop: "21px", lineHeight: "1.4" }}>
             Message text :
           </TypographyContactDetail>
@@ -394,7 +361,6 @@ function ContactUs() {
             onBlur={handleMessageBlur}
           />
 
-          {/* دکمه ارسال */}
           <ButtonContact type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Sending..." : "Send"}
           </ButtonContact>
@@ -402,6 +368,6 @@ function ContactUs() {
       </CardContact>
     </>
   );
-}
+};
 
 export default ContactUs;

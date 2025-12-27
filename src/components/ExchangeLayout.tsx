@@ -2,7 +2,7 @@ import { Box } from "@mui/material";
 import Header from "./Header/Header";
 import Footer from "./Footer/Footer";
 import { Outlet } from "react-router-dom";
-import TopComponent from "./mainpage/TopComponent"; // اضافه کردن استپر
+import TopComponent from "./mainpage/TopComponent"; 
 
 const ExchangeLayout = () => {
   return (
@@ -26,7 +26,6 @@ const ExchangeLayout = () => {
           maxWidth: "100% !important",
         }}
       >
-        {/* استپر اضافه شده */}
         <TopComponent />
         <Outlet />
       </Box>

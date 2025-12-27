@@ -19,7 +19,6 @@ import { clearError } from "../store/slices/authSlice";
 import CloseIcon from "../assets/images/errorcircle/Frame (2).svg?react";
 import EyeOpenIcon from "../assets/images/passwordicon/Frame (3).svg?react";
 
-// تعریف schema برای اعتبارسنجی با Zod
 const nameSchema = z.object({
   name: z.string().min(1, "Name is required"),
 });
@@ -67,7 +66,6 @@ const ProfilePage: React.FC = () => {
     }
   }, [error]);
 
-  // توابع اعتبارسنجی
   const validateName = (value: string) => {
     const result = nameSchema.safeParse({ name: value });
     if (!result.success) {
@@ -92,7 +90,6 @@ const ProfilePage: React.FC = () => {
     return "";
   };
 
-  // Formik configuration
   const formik = useFormik<RegisterFormData>({
     initialValues: {
       name: "",
@@ -105,7 +102,6 @@ const ProfilePage: React.FC = () => {
     onSubmit: async (values) => {
       let hasError = false;
 
-      // اعتبارسنجی نهایی قبل از سابمیت
       const nErr = validateName(values.name);
       const eErr = validateEmail(values.email);
       const pErr = validatePassword(values.password);
@@ -129,7 +125,6 @@ const ProfilePage: React.FC = () => {
     },
   });
 
-  // Event handlers
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     formik.handleChange(e);
     if (nameTouched) setNameError(validateName(e.target.value));
@@ -207,7 +202,6 @@ const ProfilePage: React.FC = () => {
           <Box component="form" onSubmit={formik.handleSubmit} noValidate>
             
 
-            {/* Field: Name */}
             <Box sx={{ mt: "0px", ml: "39px", mr: "36px" }}>
               <Typography sx={{ fontWeight: 700, color: "#ABABAB", fontSize: "16px", mb: "15px" }}>
                 Name:
@@ -233,8 +227,6 @@ const ProfilePage: React.FC = () => {
                 }}
               />
             </Box>
-
-            {/* Field: Email */}
             <Box sx={{ mt: hasNameError ? "47px" : "19px", ml: "39px", mr: "36px" }}>
               <Typography sx={{ fontWeight: 700, color: "#ABABAB", fontSize: "16px", mb: "15px" }}>
                 Email:
@@ -262,7 +254,6 @@ const ProfilePage: React.FC = () => {
               />
             </Box>
 
-            {/* Field: Password */}
             <Box sx={{ mt: hasEmailError ? "47px" : "19px", ml: "39px", mr: "36px" }}>
               <Typography sx={{ fontWeight: 700, color: "#ABABAB", fontSize: "16px", mb: "15px" }}>
                 Password:

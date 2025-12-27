@@ -25,7 +25,6 @@ import DashboardLayout from "./components/DashboardLayout";
 function App() {
   return (
     <Routes>
-      {/* Layout اصلی (بدون استپر) */}
       <Route element={<Layout />}>
         <Route path="/auth/login" element={<LoginCard />} />
         <Route path="/auth/register" element={<RegisterPage />} />
@@ -35,17 +34,15 @@ function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/blog" element={<div>Blog Page</div>} />
         <Route path="/faq" element={<Faq />} />
-         {/* Layout داشبورد (با سایدبار ثابت) */}
       <Route path="/dashboard" element={<DashboardLayout />}>
-        <Route index element={<Dashboard />} /> {/* صفحه اصلی داشبورد */}
-        <Route path="profile" element={<ProfilePage />} /> {/* پروفایل */}
-        <Route path="partner" element={<PartnerPage />} /> {/* پارتنر پروگرام */}
+        <Route index element={<Dashboard />} />
+        <Route path="profile" element={<ProfilePage />} /> 
+        <Route path="partner" element={<PartnerPage />} /> 
       </Route>
       </Route>
 
     
 
-      {/* ExchangeLayout (با استپر) */}
       <Route element={<ExchangeLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/confirm" element={<ConfirmPageWithEmail />} />

@@ -25,12 +25,9 @@ function PmSuccessPage() {
     toCurrency: "permoney"
   });
 
-  // تابع بارگذاری داده‌ها از localStorage
   const loadFromLocalStorage = () => {
     try {
-      // اول از location.state چک کن
       if (location.state?.transactionData) {
-        console.log('🎯 Using data from location state:', location.state.transactionData);
         
         const transactionData = location.state.transactionData;
         setDisplayData({
@@ -42,7 +39,6 @@ function PmSuccessPage() {
         return true;
       }
       
-      // اگر location.state نبود، از localStorage بارگذاری کن
       const savedData = localStorage.getItem('lastExchangeData');
       console.log('🔍 Checking localStorage for lastExchangeData');
       
@@ -50,7 +46,6 @@ function PmSuccessPage() {
         const parsedData = JSON.parse(savedData);
         
         if (parsedData.fromAmount) {
-          console.log('🔄 Loading from localStorage:', parsedData);
           setDisplayData({
             fromAmount: parsedData.fromAmount || "100",
             fromCurrency: parsedData.fromCurrency || "tether",
@@ -61,7 +56,6 @@ function PmSuccessPage() {
         }
       }
       
-      // سایر کلیدها
       const backupKeys = ['exchangeData', 'exchangeWaitingData', 'currentTransaction'];
       
       for (const key of backupKeys) {
@@ -98,7 +92,6 @@ function PmSuccessPage() {
     
     setIsHydrated(true);
     
-    // ذخیره stepper status
     localStorage.setItem("stepperStatus", "complete");
   }, [location.state]);
 
@@ -134,7 +127,6 @@ function PmSuccessPage() {
     }
   };
 
-  // اگر هنوز داده‌ها بارگذاری نشده، اسکلت نشان بده
   if (!isHydrated) {
     return (
       <ContainerConfirm sx={{ height: "864px" }}>
@@ -232,7 +224,7 @@ function PmSuccessPage() {
   sx={{
     marginTop: 0,
     marginLeft: 0,
-    width: "791px", // عرض کل کامپوننت
+    width: "791px", 
     "& .MuiInputBase-root": {
       height: "112px",
       fontSize: "16px",
@@ -240,21 +232,19 @@ function PmSuccessPage() {
       lineHeight: "36px",
       letterSpacing: "0.25em",
       alignItems: "flex-start",
-      padding: "16px", // فاصله داخلی برای زیبایی
+      padding: "16px", 
     },
     "& .MuiInputBase-input": {
-      // این بخش هم متن تایپی و هم پلیس‌هولدر را محدود می‌کند
       maxWidth: "628px", 
       lineHeight: "36px",
       wordBreak: "break-all",
-      // اگر می‌خواهید متن در وسط باشد، می‌توانید margin: "0 auto" بدهید
     },
     "& .MuiInputBase-input::placeholder": {
       lineHeight: "36px",
       opacity: 1,
       wordBreak: "break-all",
       whiteSpace: "pre-wrap",
-      maxWidth: "628px", // اطمینان از محدود شدن عرض پلیس‌هولدر
+      maxWidth: "628px",
     },
   }}
 />

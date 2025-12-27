@@ -1,4 +1,3 @@
-// pages/FlowSendPage.tsx
 import { useState, useEffect, useCallback } from "react"; // useRef اضافه شد
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../store/hooks/redux";
@@ -10,20 +9,14 @@ import {
   ContainerConfirm,
   TypographyDetail,
   TypographyConfirm,
-  // BoxTimer,
-  // TimerContent,
   BoxCircle,
   TypographyRule,
 } from "../components/styled/HompageStylee";
 import Tether from "../assets/images/tether/tether (2) 1.svg?react";
 import PerMoney from "../assets/images/perfectmoney/Group 5.svg?react";
-// import TimperGradient from "../assets/images/tether/Ellipse 14.svg?react";
-// import TimerPoint from "../assets/images/tether/Ellipse 15.svg?react";
 import { Box, Button } from "@mui/material";
-// import Watch from "../assets/images/tether/Frame (5).svg?react";
 import Line from "../assets/images/lines/Line 10.svg?react";
 import QRCodeGenerator from "../components/QRCodeGenerator";
-// import {  CircularProgress } from "@mui/material";
 import FigmaTimer from "../components/Timer/Timer";
 
 function FlowSendPage() {
@@ -31,16 +24,12 @@ function FlowSendPage() {
   const exchangeState = useAppSelector((state: RootState) => state.exchange);
   const [timeLeft, setTimeLeft] = useState(600);
   const [isHydrated, setIsHydrated] = useState<boolean>(false);
-  
-  // مقدار اولیه را خالی می‌گذاریم تا با دیتای واقعی پر شود
-  const [displayData, setDisplayData] = useState({
+    const [displayData, setDisplayData] = useState({
     fromAmount: "",
     fromCurrency: "tether",
     toAmount: "",
     toCurrency: "permoney"
   });
-
-  // تابع ذخیره داده‌ها
   const saveDataToLocalStorage = useCallback((dataToSave?: any) => {
     const data = dataToSave || {
       fromAmount: exchangeState.fromAmount || displayData.fromAmount,
@@ -50,9 +39,7 @@ function FlowSendPage() {
       timestamp: new Date().getTime(),
       page: 'flow-send'
     };
-    
-    // جلوگیری از ذخیره دیتای کاملاً خالی
-    if (!data.fromAmount || data.fromAmount === "") return;
+        if (!data.fromAmount || data.fromAmount === "") return;
 
     const storageKeys = [
       'flowSendPageData',
@@ -72,7 +59,6 @@ function FlowSendPage() {
     return data;
   }, [exchangeState, displayData]);
 
-  // تابع بارگذاری داده‌ها
   const loadFromLocalStorage = useCallback(() => {
     const priorityKeys = ['flowSendPageData', 'exchangeFlowData', 'exchangeData'];
     for (const key of priorityKeys) {
@@ -87,7 +73,6 @@ function FlowSendPage() {
     return null;
   }, []);
 
-  // ۱. افکت بارگذاری اولیه (Mount)
   useEffect(() => {
     const savedData = loadFromLocalStorage();
     
@@ -118,9 +103,7 @@ function FlowSendPage() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
-  // ۲. افکت حساس به تغییرات Redux (اصلاح شده)
   useEffect(() => {
-    // فقط اگر Redux دیتای واقعی داشت، جایگزین کن
     if (isHydrated && exchangeState.fromAmount && exchangeState.fromAmount !== "") {
       const newData = {
         fromAmount: exchangeState.fromAmount,
@@ -135,7 +118,6 @@ function FlowSendPage() {
     }
   }, [exchangeState.fromAmount, exchangeState.toAmount, isHydrated]);
 
-  // ۳. تایمر و بقیه موارد (بدون تغییر)
   useEffect(() => {
     if (timeLeft <= 0) return;
     const timer = setInterval(() => {
@@ -143,28 +125,18 @@ function FlowSendPage() {
     }, 1000);
     return () => clearInterval(timer);
   }, [timeLeft]);
-
-  // const formatTime = (seconds: number) => {
-  //   const mins = Math.floor(seconds / 60);
-  //   const secs = seconds % 60;
-  //   return `${mins.toString().padStart(2, "0")} : ${secs.toString().padStart(2, "0")}`;
-  // };
-
   const handleSuccess = () => {
     const transactionData = saveDataToLocalStorage();
     navigate("/success", { state: { transactionData } });
   };
-
   const handleFailed = () => {
     const transactionData = saveDataToLocalStorage();
     navigate("/failed", { state: { transactionData } });
   };
-
   const getSendIcon = () => displayData.fromCurrency === "tether" ? <Tether /> : <PerMoney />;
   const getSendCurrencyText = () => displayData.fromCurrency === "tether" ? "USDT" : "Perfect Money";
   const getReceiveIcon = () => displayData.toCurrency === "tether" ? <Tether /> : <PerMoney />;
   const getReceiveCurrencyText = () => displayData.toCurrency === "tether" ? "USDT" : "Perfect Money";
-
   if (!isHydrated) {
     return (
       <ContainerConfirm sx={{ height: "auto", pb: 4 }}>
@@ -183,34 +155,7 @@ function FlowSendPage() {
             Transaction Details :
           </TypographyConfirm>
           <FigmaTimer />
-{/* 
-          <BoxTimer>
-            <Box sx={{ position: "absolute", top: "-2px", left: "85px", right: "-1px", zIndex: 0 }}>
-              <TimperGradient />
-            </Box>
-            <Box sx={{ position: "absolute", left: "130px", top: "131px" }}>
-              <TimerPoint />
-            </Box>
-            <TimerContent>
-              <TypographyDetail sx={{ fontSize: "12px", marginTop: "38px", color: "#ffffff" }}>
-                Time For Payment
-              </TypographyDetail>
-              <TypographyDetail sx={{ fontSize: "32px", color: " #40A578", marginTop: "12px" }}>
-                {formatTime(timeLeft)}
-              </TypographyDetail>
-              <BoxDetail sx={{ gap: "3.67px", marginTop: "25px" }}>
-                <Watch style={{ marginTop: "2px" }} />
-                <TypographyDetail sx={{ fontSize: "14px", color: "#ffffff" }}>
-                  15 : 30
-                </TypographyDetail>
-              </BoxDetail>
-            </TimerContent>
-          </BoxTimer> */}
-
-
-          
         </BoxConfirmDetail>
-
         <BoxConfirmDetail sx={{ marginTop: "54px" }}>
           <TypographyDetail>Send :</TypographyDetail>
           <BoxDetail>

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   BoxAbout,
   BoxContainer,
@@ -12,7 +13,7 @@ import {
 import ImageAbout from "../assets/images/About/3d-techny-project-management-teamwork-and-integration 1.svg?react";
 import Line from "../assets/images/About/Line 32.svg?react";
 
-function AboutUs() {
+const AboutUs: React.FC = () => {
   return (
     <BoxContainer>
       <CardAbout>
@@ -30,7 +31,9 @@ function AboutUs() {
           <ImageAbout />
         </CircleAbout>
       </CardAbout>
+      
       <Line width={1} height={834} style={{ marginLeft: "570px" }} />
+
       <CardAboutDetail sx={{ top: "680px", left: "242px" }}>
         <TypographyTitle>Our Mission</TypographyTitle>
         <Typographysub>
@@ -40,6 +43,7 @@ function AboutUs() {
           World.
         </Typographysub>
       </CardAboutDetail>
+
       <CardAboutDetail sx={{ top: "1053px", left: "242px" }}>
         <TypographyTitle>Our Vision</TypographyTitle>
         <Typographysub>
@@ -48,6 +52,7 @@ function AboutUs() {
           Around The World.{" "}
         </Typographysub>
       </CardAboutDetail>
+
       <CardAboutDetail sx={{ top: "1426px", left: "242px" }}>
         <TypographyTitle>Our Values</TypographyTitle>
         <Typographysub>
@@ -58,6 +63,6 @@ function AboutUs() {
       </CardAboutDetail>
     </BoxContainer>
   );
-}
+};
 
 export default AboutUs;

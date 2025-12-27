@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import {
   BoxConfirmDetail,
   BoxConfirmRoot,
@@ -20,7 +20,7 @@ import { useNavigate, useLocation } from "react-router-dom"; // اضافه کر�
 function SendFailedPage() {
   const exchangeState = useAppSelector((state: RootState) => state.exchange);
   const navigate = useNavigate();
-  const location = useLocation(); // اضافه کردن location
+  const location = useLocation(); 
   
   const [isHydrated, setIsHydrated] = useState<boolean>(false);
   const [displayData, setDisplayData] = useState({
@@ -30,12 +30,9 @@ function SendFailedPage() {
     toCurrency: "permoney"
   });
 
-  // تابع بارگذاری داده‌ها از localStorage
   const loadFromLocalStorage = () => {
     try {
-      // اول از location.state چک کن (اگر از صفحه waiting هدایت شده‌ای)
       if (location.state?.transactionData) {
-        console.log('🎯 SendFailedPage: Using data from location state:', location.state.transactionData);
         
         const transactionData = location.state.transactionData;
         setDisplayData({
@@ -47,9 +44,7 @@ function SendFailedPage() {
         return true;
       }
       
-      // اگر location.state نبود، از localStorage بارگذاری کن
       const savedData = localStorage.getItem('lastExchangeData');
-      console.log('🔍 SendFailedPage: Checking localStorage for lastExchangeData');
       
       if (savedData) {
         const parsedData = JSON.parse(savedData);
@@ -66,7 +61,6 @@ function SendFailedPage() {
         }
       }
       
-      // سایر کلیدها
       const backupKeys = ['exchangeData', 'exchangeWaitingData', 'currentTransaction', 'exchangeReceiveData', 'exchangeFlowData'];
       
       for (const key of backupKeys) {
@@ -89,7 +83,6 @@ function SendFailedPage() {
         }
       }
       
-      // اگر هیچ داده‌ای در localStorage نبود، از Redux استفاده کن
       if (exchangeState.fromAmount && exchangeState.toAmount) {
         console.log('📝 SendFailedPage: Using data from Redux:', exchangeState);
         setDisplayData({
@@ -126,10 +119,8 @@ function SendFailedPage() {
     
     setIsHydrated(true);
     
-    // ذخیره stepper status
     localStorage.setItem("stepperStatus", "complete");
     
-    // ذخیره داده‌های فعلی در localStorage
     const saveCurrentData = () => {
       const dataToSave = {
         ...displayData,
@@ -143,7 +134,6 @@ function SendFailedPage() {
     
     saveCurrentData();
     
-    // ذخیره هنگام بسته شدن صفحه
     const handleBeforeUnload = () => {
       console.log('💾 SendFailedPage: Saving before unload');
       saveCurrentData();
@@ -156,19 +146,15 @@ function SendFailedPage() {
     };
   }, [exchangeState, location.state]);
 
-  // تابع برای بازگشت به استپ اول
   const handleTryAgain = () => {
-    // پاک کردن وضعیت stepper از localStorage
     localStorage.removeItem("stepperStatus");
     
-    // پاک کردن داده‌های تراکنش قدیمی
     localStorage.removeItem('exchangeData');
     localStorage.removeItem('exchangeWaitingData');
     localStorage.removeItem('lastExchangeData');
     localStorage.removeItem('currentTransaction');
     
-    // هدایت کاربر به صفحه اصلی یا صفحه first step
-    navigate("/"); // یا به مسیر صفحه اول خود هدایت کنید
+    navigate("/");
   };
 
   const getSendIcon = () => {
@@ -203,7 +189,6 @@ function SendFailedPage() {
     }
   };
 
-  // اگر هنوز داده‌ها بارگذاری نشده، اسکلت نشان بده
   if (!isHydrated) {
     return (
       <ContainerConfirm sx={{ height: "684px" }}>

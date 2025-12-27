@@ -18,8 +18,6 @@ import SearchIcon from "../assets/images/table/Vector (4).svg?react";
 import { CardTableDashboard } from "./styled/HompageStylee";
 import Tether from "../assets/images/tether/tether (2) 1.svg?react";
 import PerMoney from "../assets/images/perfectmoney/Group 5.svg?react";
-
-// --- Types ---
 interface Transaction {
   id: number;
   from: string;
@@ -29,8 +27,6 @@ interface Transaction {
   date: string;
   status: "Successful" | "Unsuccessful" | "Checking";
 }
-
-// --- Mock Data ---
 const RAW_DATA: Transaction[] = Array.from({ length: 28 }).map((_, index) => ({
   id: index + 1,
   from: "USDT",
@@ -46,8 +42,6 @@ const TransactionsTable: React.FC = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const rowsPerPage = 7;
-
-  // Logic: Search filtering
   const filteredData = useMemo(() => {
     return RAW_DATA.filter(
       (item) =>
@@ -56,13 +50,10 @@ const TransactionsTable: React.FC = () => {
     );
   }, [search]);
 
-  // Logic: Pagination
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
   const paginatedData = useMemo(() => {
     return filteredData.slice((page - 1) * rowsPerPage, page * rowsPerPage);
   }, [filteredData, page]);
-
-  // --- Style Helpers ---
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "Successful":
@@ -78,7 +69,6 @@ const TransactionsTable: React.FC = () => {
 
   return (
     <CardTableDashboard>
-      {/* Search Input */}
       <TextField
         placeholder="Search..."
         variant="outlined"
@@ -234,8 +224,6 @@ const TransactionsTable: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
-
-      {/* Pagination */}
       <Box sx={{ display: "flex", justifyContent: "center", mt: "20px" }}>
         <Pagination
           count={totalPages}

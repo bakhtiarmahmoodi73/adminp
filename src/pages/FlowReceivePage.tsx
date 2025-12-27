@@ -9,16 +9,11 @@ import {
   ContainerConfirm,
   TypographyDetail,
   TypographyConfirm,
-  // BoxTimer,
-  // TimerContent,
   TextFieldReceive,
   ButtonRecieve,
 } from "../components/styled/HompageStylee";
 import Tether from "../assets/images/tether/tether (2) 1.svg?react";
 import PerMoney from "../assets/images/perfectmoney/Group 5.svg?react";
-// import TimperGradient from "../assets/images/tether/Ellipse 14.svg?react";
-// import TimerPoint from "../assets/images/tether/Ellipse 15.svg?react";
-// import Watch from "../assets/images/tether/Frame (5).svg?react";
 import Line from "../assets/images/lines/Line 10.svg?react";
 import { TextField, Paper, Box } from "@mui/material";
 import Arrow from "../assets/images/arrow/Frame (6).svg?react";
@@ -30,7 +25,6 @@ const FlowReceivePage: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(600);
   const [isHydrated, setIsHydrated] = useState<boolean>(false);
   
-  // مقدار اولیه را خالی می‌گذاریم تا دیتای فیک جایگزین نشود
   const [displayData, setDisplayData] = useState({
     fromAmount: "",
     fromCurrency: "tether",
@@ -38,7 +32,6 @@ const FlowReceivePage: React.FC = () => {
     toCurrency: "permoney"
   });
 
-  // تابع کمکی برای ذخیره امن (جلوگیری از ذخیره دیتای خالی)
   const safeSave = useCallback((data: any) => {
     if (!data.fromAmount || data.fromAmount === "") return;
     localStorage.setItem('exchangeData', JSON.stringify(data));
@@ -46,7 +39,6 @@ const FlowReceivePage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // ۱. ابتدا تلاش برای خواندن از localStorage
     const savedData = localStorage.getItem('exchangeData');
     let hasLoadedFromStorage = false;
 
@@ -64,8 +56,6 @@ const FlowReceivePage: React.FC = () => {
         hasLoadedFromStorage = true;
       }
     }
-
-    // ۲. اگر استوریج خالی بود، از Redux بگیر
     if (!hasLoadedFromStorage && exchangeState.fromAmount) {
       const reduxData = {
         fromAmount: exchangeState.fromAmount,
@@ -81,7 +71,6 @@ const FlowReceivePage: React.FC = () => {
     setIsHydrated(true);
   }, [exchangeState, safeSave]);
 
-  // تایمر
   useEffect(() => {
     if (timeLeft <= 0) return;
     const timer = setInterval(() => {
@@ -89,13 +78,6 @@ const FlowReceivePage: React.FC = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, [timeLeft]);
-
-  // const formatTime = (seconds: number) => {
-  //   const mins = Math.floor(seconds / 60);
-  //   const secs = seconds % 60;
-  //   return `${mins.toString().padStart(2, "0")} : ${secs.toString().padStart(2, "0")}`;
-  // };
-
   const getSendIcon = () => displayData.fromCurrency === "tether" ? <Tether /> : <PerMoney />;
   const getSendCurrencyText = () => displayData.fromCurrency === "tether" ? "USDT" : "Perfect Money";
   const getReceiveIcon = () => displayData.toCurrency === "tether" ? <Tether /> : <PerMoney />;
@@ -134,32 +116,7 @@ const FlowReceivePage: React.FC = () => {
           </TypographyConfirm>
  
            <FigmaTimer />
-
-          {/* <BoxTimer>
-            <Box sx={{ position: "absolute", top: "-2px", left: "85px", right: "-1px", zIndex: 0 }}>
-              <TimperGradient />
-            </Box>
-            <Box sx={{ position: "absolute", left: "130px", top: "131px" }}>
-              <TimerPoint />
-            </Box>
-            <TimerContent>
-              <TypographyDetail sx={{ fontSize: "12px", marginTop: "38px", color: "#ffffff" }}>
-                Time For Payment
-              </TypographyDetail>
-              <TypographyDetail sx={{ fontSize: "32px", color: " #40A578", marginTop: "12px" }}>
-                {formatTime(timeLeft)}
-              </TypographyDetail>
-              <BoxDetail sx={{ gap: "3.67px", marginTop: "25px" }}>
-                <Watch style={{ marginTop: "2px" }} />
-                <TypographyDetail sx={{ fontSize: "14px", color: "#ffffff" }}>
-                  15 : 30
-                </TypographyDetail>
-              </BoxDetail>
-            </TimerContent>
-          </BoxTimer> */}
-
         </BoxConfirmDetail>
-
         <BoxConfirmDetail sx={{ marginTop: "54px" }}>
           <TypographyDetail>Send :</TypographyDetail>
           <BoxDetail>
