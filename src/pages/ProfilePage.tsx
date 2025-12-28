@@ -116,9 +116,9 @@ const ProfilePage: React.FC = () => {
       try {
         console.log("Register data:", values);
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        navigate("/auth/login");
+        navigate("/dashboard");
       } catch (err) {
-        console.error("Registration failed:", err);
+        console.error("Update failed:", err);
       } finally {
         setIsSubmitting(false);
       }
@@ -163,9 +163,9 @@ const ProfilePage: React.FC = () => {
   };
 
   const getCardHeight = () => {
-    let baseHeight = 0;
+    let baseHeight = 580; // پایه ارتفاع کارت
     const errorCount = [nameError, emailError, passwordError].filter(Boolean).length;
-    return `${baseHeight + (errorCount * 35)}px`;
+    return `${baseHeight + (errorCount * 30)}px`;
   };
 
   const hasNameError = nameTouched && Boolean(nameError);
@@ -192,17 +192,18 @@ const ProfilePage: React.FC = () => {
           sx={{
             boxSizing: "border-box",
             width: "100%",
+            maxWidth: "560px",
             height: getCardHeight(),
             borderRadius: "30px",
             marginTop: "64px",
             marginBottom: "152px",
             backgroundColor: "#2A3342",
+            transition: "height 0.3s ease",
           }}
         >
           <Box component="form" onSubmit={formik.handleSubmit} noValidate>
             
-
-            <Box sx={{ mt: "0px", ml: "39px", mr: "36px" }}>
+            <Box sx={{ mt: "32px", ml: "39px", mr: "36px" }}>
               <Typography sx={{ fontWeight: 700, color: "#ABABAB", fontSize: "16px", mb: "15px" }}>
                 Name:
               </Typography>
@@ -227,6 +228,7 @@ const ProfilePage: React.FC = () => {
                 }}
               />
             </Box>
+
             <Box sx={{ mt: hasNameError ? "47px" : "19px", ml: "39px", mr: "36px" }}>
               <Typography sx={{ fontWeight: 700, color: "#ABABAB", fontSize: "16px", mb: "15px" }}>
                 Email:
@@ -276,14 +278,27 @@ const ProfilePage: React.FC = () => {
                         component="button" 
                         type="button" 
                         onClick={() => setShowPassword(!showPassword)} 
-                        sx={iconButtonStyle}
+                        sx={{
+                          ...iconButtonStyle,
+                          position: "relative",
+                          justifyContent: "center",
+                          '&::after': {
+                            content: '""',
+                            position: 'absolute',
+                            width: !showPassword ? "100%" : "0%",
+                            height: "1.5px",
+                            backgroundColor: "#ABABAB",
+                            transform: "rotate(-45deg)",
+                            transition: "width 0.2s ease-in-out",
+                            pointerEvents: "none",
+                          }
+                        }}
                       >
                         <EyeOpenIcon 
                           style={{ 
                             width: "20px", 
                             height: "20px",
                             opacity: showPassword ? 1 : 0.7,
-                            filter: showPassword ? 'none' : 'brightness(0.8)',
                           }} 
                         />
                       </Box>
@@ -312,10 +327,9 @@ const ProfilePage: React.FC = () => {
                 "&:disabled": { backgroundColor: "#1D8D94", opacity: 0.7 },
               }}
             >
-            Confirm
+              Confirm
             </Button>
 
-           
           </Box>
         </Card>
       </Box>
@@ -323,7 +337,7 @@ const ProfilePage: React.FC = () => {
   );
 };
 
-// Styles Helpers to keep the code clean
+// Styles Helpers
 const textFieldStyle = (hasError: boolean) => ({
   "& .MuiOutlinedInput-root": {
     height: "57px",
