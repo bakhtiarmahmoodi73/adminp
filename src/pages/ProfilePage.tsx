@@ -163,7 +163,7 @@ const ProfilePage: React.FC = () => {
   };
 
   const getCardHeight = () => {
-    let baseHeight = 580; // پایه ارتفاع کارت
+    let baseHeight = 580; 
     const errorCount = [nameError, emailError, passwordError].filter(Boolean).length;
     return `${baseHeight + (errorCount * 30)}px`;
   };
@@ -337,7 +337,6 @@ const ProfilePage: React.FC = () => {
   );
 };
 
-// Styles Helpers
 const textFieldStyle = (hasError: boolean) => ({
   "& .MuiOutlinedInput-root": {
     height: "57px",
