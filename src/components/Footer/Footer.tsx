@@ -1,4 +1,3 @@
-// src/components/Layout/Footer/Footer.tsx
 import { Box, Container, Typography } from "@mui/material";
 import line from "../../assets/images/lines/Line 9.svg";
 
@@ -30,7 +29,7 @@ const Footer = () => {
 
           flexDirection: "column",
           alignItems: "center",
-          position: "relative", // برای کنترل بهتر موقعیت
+          position: "relative", 
         }}
       >
         <Box
@@ -38,10 +37,10 @@ const Footer = () => {
           src={line}
           alt="line"
           sx={{
-            all: "unset", // پاک کردن همه استایل‌های اولیه
+            all: "unset",
             display: "block",
-            width: "1140px", // طول خط 1140px
-            height: "1px", // ارتفاع خط 1px
+            width: "1140px", 
+            height: "1px", 
             backgroundColor: "#2E3E59",
             cursor: "pointer",
             marginBottom: "18px",

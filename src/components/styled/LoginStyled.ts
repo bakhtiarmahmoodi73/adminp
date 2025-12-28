@@ -88,8 +88,8 @@ export const TypographyLogin = styled(Typography)(({
   WebkitTextFillColor: "transparent",
   backgroundClip: "text",
   color: "transparent",
-  display: "block", // تغییر این خط
-  margin: 0, // اضافه کردن این
+  display: "block", 
+  margin: 0, 
   padding: 0,
 
 }));

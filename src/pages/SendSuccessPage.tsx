@@ -240,7 +240,7 @@ function SendSuccessPage() {
           }}
         >
           <TypographyDetail sx={{ fontSize: '20px' }}>E- voucher :</TypographyDetail>
-          <TextFieldSuccess sx={{ marginTop: 0, marginLeft: 0 }} placeholder="2326564925" />
+          <TextFieldSuccess sx={{ marginTop: 0, marginLeft: 0 }} disabled  placeholder="2326564925" />
         </BoxDetail>
         <BoxDetail
           sx={{
@@ -249,7 +249,7 @@ function SendSuccessPage() {
           }}
         >
           <TypographyDetail>activation code :</TypographyDetail>
-          <TextFieldSuccess sx={{ marginTop: 0, marginLeft: 0 }} placeholder="9012037427092330" />
+          <TextFieldSuccess sx={{ marginTop: 0, marginLeft: 0 }} disabled placeholder="9012037427092330" />
         </BoxDetail>
         <BoxDetail
           sx={{
@@ -259,7 +259,7 @@ function SendSuccessPage() {
         >
           <TypographyDetail>Amount :</TypographyDetail>
           <TextFieldSuccess 
-            sx={{ marginTop: 0, marginLeft: 0 }} 
+            sx={{ marginTop: 0, marginLeft: 0 }} disabled 
             placeholder={`${displayData.fromAmount} ${getSendCurrencyText()}`} 
           />
         </BoxDetail>
@@ -271,7 +271,7 @@ function SendSuccessPage() {
         >
           <TypographyDetail>Time & Date :</TypographyDetail>
           <TextFieldSuccess sx={{ marginTop: 0, marginLeft: 0, letterSpacing: "25%" }} 
-            placeholder={`${new Date().toLocaleDateString('en-GB')}, ${new Date().toLocaleTimeString('en-US', {hour12: false})}`} 
+            disabled placeholder={`${new Date().toLocaleDateString('en-GB')}, ${new Date().toLocaleTimeString('en-US', {hour12: false})}`} 
           />
         </BoxDetail>
       </BoxConfirmRoot>

@@ -290,7 +290,7 @@ const WaitingPage: React.FC = () => {
           <TypographyDetail> Address:</TypographyDetail>
           <TextFieldSuccess
             sx={{ marginTop: 0, marginLeft: 0 }}
-            placeholder="X09aa998ee454c456255daf3ac94908f1dcfb7033"
+           disabled placeholder="X09aa998ee454c456255daf3ac94908f1dcfb7033"
           />
         </BoxDetail>
         <BoxDetail
@@ -302,7 +302,7 @@ const WaitingPage: React.FC = () => {
           <TypographyDetail> Amount :</TypographyDetail>
           <TextFieldSuccess
             sx={{ marginTop: 0, marginLeft: 0 }}
-            placeholder="100 USDT"
+           disabled placeholder="100 USDT"
           />
         </BoxDetail>
 

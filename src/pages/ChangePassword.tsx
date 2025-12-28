@@ -4,6 +4,7 @@ import { z } from "zod";
 import { Box, Card, TextField, Button, Typography, InputAdornment } from "@mui/material";
 import { TypographyLogin } from "../components/styled/LoginStyled";
 import EyeOpenIcon from "../assets/images/passwordicon/Frame (3).svg?react";
+
 const changePasswordSchema = z.object({
   newPassword: z
     .string()
@@ -57,6 +58,28 @@ const ChangePasswordPage: React.FC = () => {
     e.preventDefault();
     setShowRepeatPassword((prev) => !prev);
   }, []);
+
+  const eyeSlashStyle = (isVisible: boolean) => ({
+    cursor: "pointer",
+    background: 'none',
+    border: 'none',
+    p: 0,
+    m: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      width: !isVisible ? "100%" : "0%", 
+      height: "1.5px",
+      backgroundColor: "#ABABAB",
+      transform: "rotate(-45deg)",
+      transition: "width 0.2s ease-in-out",
+      pointerEvents: "none",
+    }
+  });
 
   return (
     <Card
@@ -121,7 +144,7 @@ const ChangePasswordPage: React.FC = () => {
                 <InputAdornment position="end" sx={{ position: "absolute", right: "14px", top: "50%", transform: "translateY(-50%)" }}>
                   <Box
                     onClick={toggleNewPasswordVisibility}
-                    sx={{ cursor: "pointer", background: 'none', border: 'none', p: 0, m: 0, display: 'flex', alignItems: 'center' }}
+                    sx={eyeSlashStyle(showNewPassword)}
                     component="button"
                     type="button"
                     aria-label="Toggle password visibility"
@@ -169,7 +192,7 @@ const ChangePasswordPage: React.FC = () => {
                 <InputAdornment position="end" sx={{ position: "absolute", right: "14px", top: "50%", transform: "translateY(-50%)" }}>
                   <Box
                     onClick={toggleRepeatPasswordVisibility}
-                    sx={{ cursor: "pointer", background: 'none', border: 'none', p: 0, m: 0, display: 'flex', alignItems: 'center' }}
+                    sx={eyeSlashStyle(showRepeatPassword)}
                     component="button"
                     type="button"
                     aria-label="Toggle password visibility"

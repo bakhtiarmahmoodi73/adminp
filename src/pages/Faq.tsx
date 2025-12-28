@@ -48,6 +48,8 @@ const Faq: React.FC = () => {
           <TextFieldFaq placeholder="Find Your Desired Question" />
           <SearchIcon
             style={{
+              width:"24px",
+              height:"24px",
               position: "absolute",
               top: "28px",
               left: "26px",

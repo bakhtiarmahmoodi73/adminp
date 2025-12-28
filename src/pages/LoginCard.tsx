@@ -142,7 +142,31 @@ const LoginCard: React.FC = () => {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end" sx={{ position: "absolute", right: "14px", top: "50%", transform: "translateY(-50%)" }}>
-                    <Box onClick={handleTogglePasswordVisibility} component="button" type="button" sx={{ cursor: "pointer", background: "none", border: "none", p: 0, display: "flex" }}>
+                    <Box 
+                      onClick={handleTogglePasswordVisibility} 
+                      component="button" 
+                      type="button" 
+                      sx={{ 
+                        cursor: "pointer", 
+                        background: "none", 
+                        border: "none", 
+                        p: 0, 
+                        display: "flex",
+                        position: "relative", 
+                        alignItems: "center",
+                        justifyContent: "center",
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          width: !showPassword ? "100%" : "0%", 
+                          height: "1.5px",
+                          backgroundColor: "#ABABAB",
+                          transform: "rotate(-45deg)",
+                          transition: "width 0.2s ease-in-out",
+                          pointerEvents: "none",
+                        }
+                      }}
+                    >
                       <EyeOpenIcon style={{ width: "16px", height: "16px" }} />
                     </Box>
                   </InputAdornment>

@@ -91,7 +91,7 @@ export const TextFieldMainTop = styled(TextField)({
     color: "#FFFFFF",
   },
   "& input::placeholder": {
-    color: "#FFFFFF",
+    color: "#ABABAB",
     opacity: 1,
   },
 });
@@ -196,10 +196,40 @@ export const TypographyRule = styled(Typography)({
 });
 
 export const CustomCheckbox = styled(Checkbox)({
-  backgroundColor: "#242C39",
-  borderRadius: "8px",
+  backgroundColor: "transparent", 
+  padding: 0,
   width: "32px",
   height: "32px",
+  '&:hover': {
+    backgroundColor: 'transparent',
+  },
+
+  '& .icon-box': {
+    borderRadius: "8px",
+    width: 32,
+    height: 32,
+    backgroundColor: '#242C39',
+    display: 'block',
+  },
+  '& .checked-box': {
+    borderRadius: "8px",
+    width: 32,
+    height: 32,
+    backgroundColor: '#00D094', 
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    '&::after': {
+      content: '""',
+      width: '8px',
+      height: '15px',
+      border: 'solid white',
+      borderWidth: '0 3px 3px 0', 
+      transform: 'rotate(45deg)',  
+      marginBottom: '4px', 
+    },
+  },
 });
 export const CustomButton = styled(Button)({
   display: "block",
@@ -224,7 +254,6 @@ export const BoxTimer = styled(Box)({
   position: "relative",
   display: "flex",
   alignItems: "center",
-  // justifyContent: "center",
   flexDirection: "column",
   width: "171px",
   height: "171px",
@@ -254,10 +283,9 @@ export const TimerPoint = styled(Box)({
   borderRadius: "50%",
   backgroundColor: "#40A578",
   zIndex: 2,
-  // تنظیم دقیق روی کمان (مثلاً پایین سمت راست)
-  top: "calc(50% - 38px)", // 50% - 38px (بالا)
+  top: "calc(50% - 38px)",
   left: "calc(50% + 76px)",
-  transform: "translate(60px, -60px)", // با توجه به موقعیت دلخواه روی دایره
+  transform: "translate(60px, -60px)",
   boxShadow: `
     0 0 6px rgba(64, 165, 120, 1),
     0 0 12px rgba(64, 165, 120, 0.7)
@@ -285,7 +313,6 @@ export const BoxQrDetail = styled(Box)({
   gap: "38px",
 });
 export const PicQr = styled("div")({
-  // backgroundColor: "#ABABAB",
   width: "191px",
   height: "191px",
 });
@@ -294,7 +321,6 @@ export const TypographySuccess = styled(Typography)({
   fontWeight: 700,
   color: "#40A578",
 });
-
 export const TextFieldSuccess = styled(TextField)({
   backgroundColor: "#242C39",
   borderRadius: "10px",
@@ -302,6 +328,7 @@ export const TextFieldSuccess = styled(TextField)({
   width: "791px",
   marginTop: "22px",
   marginLeft: "39px",
+
 
   "& .MuiOutlinedInput-root": {
     paddingRight: 0,
@@ -324,6 +351,26 @@ export const TextFieldSuccess = styled(TextField)({
     opacity: 1,
     letterSpacing: "0.25em",
   },
+  "& .MuiOutlinedInput-input": {
+    color: "#FFFFFF",
+    fontSize: "20px",
+    fontWeight: 700,
+    WebkitTextFillColor: "#FFFFFF", 
+    
+    "&.Mui-disabled": {
+      color: "#FFFFFF",
+      WebkitTextFillColor: "#FFFFFF",
+    },
+  },
+
+  "& .MuiOutlinedInput-input::placeholder": {
+    color: "#FFFFFF",
+    opacity: 1,
+    "&.Mui-disabled": {
+      color: "#FFFFFF",
+      WebkitTextFillColor: "#FFFFFF",
+    }
+  },
 });
 
 export const ButtonFailed = styled(Button)({
@@ -339,9 +386,6 @@ export const ButtonFailed = styled(Button)({
   color: "#FFFFFF",
   textTransform: "none",
   boxShadow: "0 4px 8px rgba(29, 141, 148, 0.5)",
-  // "&:hover": {
-  //   backgroundColor: "#16666c",
-  // },
 });
 
 export const TextFieldReceive = styled(TextField)({
@@ -394,9 +438,7 @@ export const TypographyWaiting = styled(Typography)({
   fontWeight: 700,
   color: "#FFAF00",
 });
-// components/styled/HompageStylee.tsx
 
-// کانتینر برای دکمه‌ها
 export const ButtonContainer = styled(Box)({
   display: "flex",
   justifyContent: "center",
@@ -405,7 +447,6 @@ export const ButtonContainer = styled(Box)({
   paddingBottom: "20px",
 });
 
-// دکمه Success
 export const ButtonSuccess = styled(Button)({
   minWidth: "120px",
   height: "40px",
@@ -420,7 +461,6 @@ export const ButtonSuccess = styled(Button)({
   },
 });
 
-// دکمه Failed
 export const ButtonFailedpm = styled(Button)({
   minWidth: "120px",
   height: "40px",
@@ -459,7 +499,7 @@ export const TypographyContact = styled(Typography)({
   WebkitTextFillColor: "transparent",
   backgroundClip: "text",
   color: "transparent",
-  display: "block", // تغییر این خط
+  display: "block",
   padding: 0,
 });
 export const TypographyContactDetail = styled(Typography)({
@@ -503,19 +543,19 @@ export const TextFieldContact = styled(TextField)({
 
 export const TextAreaContact = styled(TextareaAutosize)({
   width: "485px",
-  height: "149px", // ارتفاع ثابت
+  height: "149px",
   marginTop: "15px",
   marginLeft: "39px",
-  padding: "16px 20px", // padding همه طرفه مثل TextField
+  padding: "16px 20px",
   borderRadius: "10px",
   backgroundColor: "#242C39",
   color: "#FFFFFF",
   fontSize: "14px",
   fontWeight: 700,
-  boxSizing: "border-box", // padding داخل اندازه محاسبه شود
-  resize: "none", // کاربر نمی‌تواند اندازه تغییر دهد
-  border: "none", // بدون border
-  outline: "none", // بدون خط فوکوس پیش‌فرض
+  boxSizing: "border-box",
+  resize: "none",
+  border: "none",
+  outline: "none",
 
   "&::placeholder": {
     color: "#FFFFFF",
@@ -523,7 +563,7 @@ export const TextAreaContact = styled(TextareaAutosize)({
   },
 
   "&:focus": {
-    outline: "none", // هنگام فوکوس خط دور نیفتد
+    outline: "none",
   },
 });
 
@@ -682,29 +722,30 @@ export const TextFieldFaq = styled(TextField)({
   "& .MuiOutlinedInput-root": {
     height: "80px",
     borderRadius: "10px",
+    paddingLeft: "0px",
   },
 
   "& .MuiOutlinedInput-input": {
-    padding: "0 40px",
     height: "100%",
     boxSizing: "border-box",
     color: "#FFFFFF",
     fontSize: "20px",
     fontWeight: 700,
+    marginLeft: "63px",
   },
 
-  // استایل placeholder
   "& .MuiOutlinedInput-input::placeholder": {
     color: "#FFFFFF",
     opacity: 1,
-    // اضافه کردن پدینگ یا مارجین به placeholder
-    // این بخش ممکن است در همه مرورگرها کار نکند
-    paddingLeft: "53px",
+    marginLeft: "40px",
   },
 
-  // روش جایگزین برای استایل placeholder
   "& .MuiInputLabel-root": {
     color: "#FFFFFF",
+  },
+
+  "& .MuiOutlinedInput-notchedOutline": {
+    border: "none",
   },
 });
 export const ButtonFaq = styled(Button)({
@@ -754,7 +795,6 @@ export const CardFaqCollapse = styled(Box)({
   borderRadius: "30px",
   display: "flex",
   flexDirection: "column",
-  // justifyContent: "center",
   padding: 0,
 });
 
@@ -801,26 +841,21 @@ export const CardSideBarDashboard = styled(Card)({
   borderRadius: "20px",
   display: "flex",
   flexDirection: "column",
-  // تراز کردن عمودی کل محتوا در وسط سایدبار
-  justifyContent: "center", 
-  // فاصله‌ی عمودی بین آیتم‌ها
-  gap: "40px", 
+  justifyContent: "center",
+  gap: "40px",
   padding: 0,
-  // حذف سایه پیش‌فرض MUI برای تمیزتر شدن ظاهر
-  boxShadow: "none", 
+  boxShadow: "none",
 });
 export const CardTableDashboard = styled(Card)({
   minWidth: "850px",
   minHeight: "775px",
-  flexShrink: 0, // مانع از کوچک شدن کارت می‌شود
+  flexShrink: 0,
   marginTop: "54px",
-  //  marginLeft: "auto",
   marginRight: "auto",
   backgroundColor: " #2A3342",
   borderRadius: "20px",
   display: "flex",
   flexDirection: "column",
-  // justifyContent: "center",
   padding: 0,
 });
 
@@ -835,9 +870,8 @@ export const CardDetailSideBar = styled(Box)({
   cursor: "pointer",
   transition: "all 0.2s ease-in-out",
 
-  // ۱. حالت پیش‌فرض (خاکستری برای همه)
   "& svg, & svg path": {
-    stroke: "#ABABAB", // رنگ خاکستری پیش‌فرض
+    stroke: "#ABABAB",
     fill: "none",
     transition: "stroke 0.2s ease",
   },
@@ -845,16 +879,6 @@ export const CardDetailSideBar = styled(Box)({
     color: "#ABABAB",
     fontWeight: 400,
     transition: "all 0.2s ease",
-  },
-
-  "&:hover": {
-    "& svg, & svg path": {
-      stroke: "#ffffff !important", // سفید شدن آیکون
-    },
-    "& p": {
-      color: "#ffffff !important", // سفید شدن متن
-      fontWeight: "600 !important", // ضخیم شدن متن
-    },
   },
 });
 

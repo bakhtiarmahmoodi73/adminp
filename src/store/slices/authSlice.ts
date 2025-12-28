@@ -22,26 +22,31 @@ const initialState: AuthState = {
   isAuthenticated: false,
 };
 
+export const registerUser = createAsyncThunk(
+  'auth/register',
+  async (userData: { name: string; email: string; password: string }) => {
+    const response = await new Promise<{ user: User; token: string }>((resolve) => {
+      setTimeout(() => {
+        resolve({
+          user: { 
+            id: Date.now().toString(), 
+            email: userData.email, 
+            name: userData.name 
+          },
+          token: 'mock-jwt-token-' + Date.now()
+        });
+      }, 1000);
+    });
+    localStorage.setItem('token', response.token);
+    localStorage.setItem('user', JSON.stringify(response.user));
+    return response;
+  }
+);
+
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials: { email: string; password: string }) => {
-    const isValidEmail = (email: string) => {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
-    };
-    
-    const isValidPassword = (password: string) => {
-      return password.length >= 6;  
-    };
-    
-    if (!isValidEmail(credentials.email)) {
-      throw new Error('Please enter a valid email address');
-    }
-    
-    if (!isValidPassword(credentials.password)) {
-      throw new Error('Password must be at least 6 characters long');
-    }
-        const response = await new Promise<{ user: User; token: string }>((resolve) => {
+    const response = await new Promise<{ user: User; token: string }>((resolve) => {
       setTimeout(() => {
         resolve({
           user: { 
@@ -53,10 +58,8 @@ export const loginUser = createAsyncThunk(
         });
       }, 1000);
     });
-    
     localStorage.setItem('token', response.token);
     localStorage.setItem('user', JSON.stringify(response.user));
-    
     return response;
   }
 );
@@ -78,7 +81,6 @@ const authSlice = createSlice({
     loadUserFromStorage: (state) => {
       const token = localStorage.getItem('token');
       const userStr = localStorage.getItem('user');
-      
       if (token && userStr) {
         try {
           state.user = JSON.parse(userStr);
@@ -105,6 +107,20 @@ const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || 'Login failed';
+      })
+      .addCase(registerUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.isAuthenticated = true;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || 'Registration failed';
       });
   },
 });

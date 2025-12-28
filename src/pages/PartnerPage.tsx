@@ -96,7 +96,7 @@ const PartnerPage: React.FC = () => {
             disableUnderline: true,
             sx: {
               pl: "26px",
-              pt: "2px",
+              pt: "13px",
               fontSize: "16px",
               fontWeight: 700,
               color: "#FFFFFF",
@@ -408,7 +408,6 @@ const PartnerPage: React.FC = () => {
         </Table>
       </TableContainer>
 
-      {/* مودال نهایی مطابق تصویر MODAL.JPG */}
       <Dialog
         open={openWithdraw}
         onClose={() => setOpenWithdraw(false)}
@@ -419,7 +418,6 @@ const PartnerPage: React.FC = () => {
             borderRadius: "20px",
             width: "744px",
             height: "396px",
-            border: "",
             backgroundImage: "none",
           },
         }}
@@ -444,9 +442,9 @@ const PartnerPage: React.FC = () => {
           </Typography>
           <IconButton
             onClick={() => setOpenWithdraw(false)}
-            sx={{ color: "#ABABAB", p: 0, mt: "44px", mr: "58px" }}
+            sx={{ color: "#ABABAB", p:"4px", mt: "44px", mr: "58px" }}
           >
-            <CloseIcon sx={{ fontSize: "24px" }} />
+            <CloseIcon sx={{ fontSize: "24px", }} />
           </IconButton>
         </Box>
 
@@ -463,6 +461,7 @@ const PartnerPage: React.FC = () => {
               color: "#ABABAB",
               mt: "41px",
               fontSize: "20px",
+              mb:"29px",
               fontWeight: 700,
             }}
           >

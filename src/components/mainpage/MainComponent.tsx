@@ -39,32 +39,40 @@ const MainComponent: React.FC = () => {
     (state) => state.exchange
   );
 
+  const menuStyles = {
+    PaperProps: {
+      sx: {
+        width: "230px",
+        backgroundColor: "#2A3342",
+        borderRadius: "12px",
+        mt: "8px",
+        ml:'30px',
+        "& .MuiMenuItem-root": {
+          padding: "12px 16px",
+          gap: "40px",
+          "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.05)" },
+          "&.Mui-selected": {
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
+            "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.15)" },
+          },
+        },
+      },
+    },
+  };
+
   const calculateToAmount = (amount: string, fromCurr: string, toCurr: string): string => {
     if (!amount) return "";
-    
     const numAmount = parseFloat(amount);
-        if (fromCurr === "tether" && toCurr === "permoney") {
-      return (numAmount / 2).toFixed(2);
-    }
-        if (fromCurr === "permoney" && toCurr === "tether") {
-      return (numAmount * 2).toFixed(2);
-    }
-    
+    if (fromCurr === "tether" && toCurr === "permoney") return (numAmount / 2).toFixed(2);
+    if (fromCurr === "permoney" && toCurr === "tether") return (numAmount * 2).toFixed(2);
     return numAmount.toFixed(2);
   };
 
   const calculateFromAmount = (amount: string, fromCurr: string, toCurr: string): string => {
     if (!amount) return "";
-    
     const numAmount = parseFloat(amount);
-    
-    if (fromCurr === "tether" && toCurr === "permoney") {
-      return (numAmount * 2).toFixed(2);
-    }
-        if (fromCurr === "permoney" && toCurr === "tether") {
-      return (numAmount / 2).toFixed(2);
-    }
-    
+    if (fromCurr === "tether" && toCurr === "permoney") return (numAmount * 2).toFixed(2);
+    if (fromCurr === "permoney" && toCurr === "tether") return (numAmount / 2).toFixed(2);
     return numAmount.toFixed(2);
   };
 
@@ -72,9 +80,10 @@ const MainComponent: React.FC = () => {
     const currentFromAmount = fromAmount;
     const currentToAmount = toAmount;
     dispatch(swapCurrencies());
-        dispatch(setFromAmount(currentToAmount));
+    dispatch(setFromAmount(currentToAmount));
     dispatch(setToAmount(currentFromAmount));
   };
+
   const handleFromAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value === "" || /^\d*\.?\d*$/.test(value)) {
@@ -87,11 +96,12 @@ const MainComponent: React.FC = () => {
       }
     }
   };
+
   const handleToAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value === "" || /^\d*\.?\d*$/.test(value)) {
       dispatch(setToAmount(value));
-            if (value) {
+      if (value) {
         const calculatedAmount = calculateFromAmount(value, fromCurrency, toCurrency);
         dispatch(setFromAmount(calculatedAmount));
       } else {
@@ -101,24 +111,26 @@ const MainComponent: React.FC = () => {
   };
   const handleFromCurrencyChange = (e: SelectChangeEvent<string>) => {
     const newFromCurrency = e.target.value;
+    const newToCurrency = newFromCurrency === "tether" ? "permoney" : "tether";
+    
     dispatch(setFromCurrency(newFromCurrency));
-        if (fromAmount) {
-      const calculatedAmount = calculateToAmount(fromAmount, newFromCurrency, toCurrency);
+    dispatch(setToCurrency(newToCurrency)); 
+
+    if (fromAmount) {
+      const calculatedAmount = calculateToAmount(fromAmount, newFromCurrency, newToCurrency);
       dispatch(setToAmount(calculatedAmount));
-    } else if (toAmount) {
-      const calculatedAmount = calculateFromAmount(toAmount, newFromCurrency, toCurrency);
-      dispatch(setFromAmount(calculatedAmount));
     }
   };
   const handleToCurrencyChange = (e: SelectChangeEvent<string>) => {
     const newToCurrency = e.target.value;
+    const newFromCurrency = newToCurrency === "tether" ? "permoney" : "tether";
+
     dispatch(setToCurrency(newToCurrency));
-        if (fromAmount) {
-      const calculatedAmount = calculateToAmount(fromAmount, fromCurrency, newToCurrency);
+    dispatch(setFromCurrency(newFromCurrency)); 
+
+    if (fromAmount) {
+      const calculatedAmount = calculateToAmount(fromAmount, newFromCurrency, newToCurrency);
       dispatch(setToAmount(calculatedAmount));
-    } else if (toAmount) {
-      const calculatedAmount = calculateFromAmount(toAmount, fromCurrency, newToCurrency);
-      dispatch(setFromAmount(calculatedAmount));
     }
   };
 
@@ -127,18 +139,7 @@ const MainComponent: React.FC = () => {
       alert("Please enter a valid amount (minimum $100)");
       return;
     }
-
-    if (parseFloat(fromAmount) > 4832) {
-      alert("Maximum amount is $4832");
-      return;
-    }
-    dispatch(setExchangeFormData({
-      fromCurrency,
-      toCurrency,
-      fromAmount,
-      toAmount,
-    }));
-
+    dispatch(setExchangeFormData({ fromCurrency, toCurrency, fromAmount, toAmount }));
     dispatch(setStep(2));
     navigate("/confirm");
   };
@@ -158,71 +159,41 @@ const MainComponent: React.FC = () => {
             endAdornment: (
               <InputAdornment position="end">
                 <Box sx={{ display: "flex", alignItems: "center", pr: "70px" }}>
-                  <Box
-                    sx={{
-                      width: "1px",
-                      height: "38px",
-                      background: "#5B5F5E",
-                      mx: "17px",
-                    }}
-                  />
+                  <Box sx={{ width: "1px", height: "38px", background: "#5B5F5E", mx: "17px" }} />
                   <Select
                     value={fromCurrency}
                     onChange={handleFromCurrencyChange}
                     variant="standard"
                     disableUnderline
+                    MenuProps={menuStyles}
                     sx={{
                       color: "#ABABAB",
-                      "& .MuiSelect-select": {
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "9px",
-                      },
+                      "& .MuiSelect-select": { display: "flex", alignItems: "center", gap: "9px" },
                     }}
                   >
                     <MenuItem value="tether">
                       <Tether width={25} height={25} />
-                      <Typography sx={{ fontSize: "14px", color: "#979E9C" }}>
-                        USDT (TRC20)
-                      </Typography>
+                      <Typography sx={{ fontSize: "14px", color: "#979E9C" }}>USDT (TRC20)</Typography>
                     </MenuItem>
                     <MenuItem value="permoney">
                       <Permoney width={25} height={25} />
-                      <Typography sx={{ fontSize: "14px", color: "#979E9C" }}>
-                        Perfect Money
-                      </Typography>
+                      <Typography sx={{ fontSize: "14px", color: "#979E9C" }}>Perfect Money</Typography>
                     </MenuItem>
                   </Select>
                 </Box>
               </InputAdornment>
             ),
           }}
-          sx={{
-            "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-              {
-                "-webkit-appearance": "none",
-                margin: 0,
-              },
-            "& input[type=number]": {
-              "-moz-appearance": "textfield",
-            },
-          }}
         />
-        <TypographyMain sx={{ mt: "14px" }}>
-          Min : $100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Max: $4832
-        </TypographyMain>
+        <TypographyMain sx={{ mt: "14px" }}>Min : $100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Max: $4832</TypographyMain>
       </CardMainTop>
-      <Box
-        sx={{
-          position: "absolute",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
-      >
+
+      <Box sx={{ position: "absolute", left: "50%", transform: "translate(-50%, -50%)", zIndex: 10 }}>
         <ChangeButtonComponent onClick={handleSwap}>
           <Change />
         </ChangeButtonComponent>
       </Box>
+
       <CardMainBottm>
         <TypographyMain>To:</TypographyMain>
         <TextFieldMainTop
@@ -236,59 +207,33 @@ const MainComponent: React.FC = () => {
             endAdornment: (
               <InputAdornment position="end">
                 <Box sx={{ display: "flex", alignItems: "center", pr: "70px" }}>
-                  <Box
-                    sx={{
-                      width: "1px",
-                      height: "38px",
-                      background: "#5B5F5E",
-                      mx: "17px",
-                    }}
-                  />
+                  <Box sx={{ width: "1px", height: "38px", background: "#5B5F5E", mx: "17px" }} />
                   <Select
                     value={toCurrency}
                     onChange={handleToCurrencyChange}
                     variant="standard"
                     disableUnderline
+                    MenuProps={menuStyles}
                     sx={{
                       color: "#ABABAB",
-                      "& .MuiSelect-select": {
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "9px",
-                      },
+                      "& .MuiSelect-select": { display: "flex", alignItems: "center", gap: "9px" },
                     }}
                   >
                     <MenuItem value="tether">
                       <Tether width={25} height={25} />
-                      <Typography sx={{ fontSize: "14px", color: "#979E9C" }}>
-                        USDT (TRC20)
-                      </Typography>
+                      <Typography sx={{ fontSize: "14px", color: "#979E9C" }}>USDT (TRC20)</Typography>
                     </MenuItem>
                     <MenuItem value="permoney">
                       <Permoney width={25} height={25} />
-                      <Typography sx={{ fontSize: "14px", color: "#979E9C" }}>
-                        Perfect Money
-                      </Typography>
+                      <Typography sx={{ fontSize: "14px", color: "#979E9C" }}>Perfect Money</Typography>
                     </MenuItem>
                   </Select>
                 </Box>
               </InputAdornment>
             ),
           }}
-          sx={{
-            "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-              {
-                "-webkit-appearance": "none",
-                margin: 0,
-              },
-            "& input[type=number]": {
-              "-moz-appearance": "textfield",
-            },
-          }}
         />
-        <TypographyMain sx={{ mt: "14px" }}>
-          Min : $100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Max: $4832
-        </TypographyMain>
+        <TypographyMain sx={{ mt: "14px" }}>Min : $100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Max: $4832</TypographyMain>
       </CardMainBottm>
 
       <ButtonMain onClick={handleMakeExchange}>Make Exchange</ButtonMain>

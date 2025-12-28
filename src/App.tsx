@@ -1,4 +1,9 @@
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "./store";
+import { loadUserFromStorage } from "./store/slices/authSlice";
+
 import Layout from "./components/Layout";
 import ExchangeLayout from "./components/ExchangeLayout";
 import LoginCard from "./pages/LoginCard";
@@ -23,6 +28,11 @@ import PartnerPage from "./pages/PartnerPage";
 import DashboardLayout from "./components/DashboardLayout";
 
 function App() {
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    dispatch(loadUserFromStorage());
+  }, [dispatch]);
+
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -34,14 +44,13 @@ function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/blog" element={<div>Blog Page</div>} />
         <Route path="/faq" element={<Faq />} />
-      <Route path="/dashboard" element={<DashboardLayout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="profile" element={<ProfilePage />} /> 
-        <Route path="partner" element={<PartnerPage />} /> 
-      </Route>
       </Route>
 
-    
+      <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="profile" element={<ProfilePage />} />
+        <Route path="partner" element={<PartnerPage />} />
+      </Route>
 
       <Route element={<ExchangeLayout />}>
         <Route path="/" element={<HomePage />} />

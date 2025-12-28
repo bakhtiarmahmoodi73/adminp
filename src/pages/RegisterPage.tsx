@@ -15,7 +15,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../store";
-import { clearError } from "../store/slices/authSlice";
+import { clearError, registerUser } from "../store/slices/authSlice"; 
 import CloseIcon from "../assets/images/errorcircle/Frame (2).svg?react";
 import EyeOpenIcon from "../assets/images/passwordicon/Frame (3).svg?react";
 import { TypographyLogin } from "../components/styled/LoginStyled";
@@ -35,7 +35,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { error } = useSelector((state: RootState) => state.auth);
+  const { error, isLoading } = useSelector((state: RootState) => state.auth);
 
   const [showError, setShowError] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -59,18 +59,16 @@ const RegisterPage: React.FC = () => {
       });
       return errors;
     },
-    onSubmit: async (values, { setSubmitting }) => {
+    onSubmit: async (values) => {
       try {
-        console.log("Register data:", values);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await dispatch(registerUser(values)).unwrap();
         navigate("/auth/login");
       } catch (err) {
         console.error("Registration failed:", err);
-      } finally {
-        setSubmitting(false);
       }
     },
   });
+
   const handleTogglePasswordVisibility = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setShowPassword((prev) => !prev);
@@ -93,7 +91,6 @@ const RegisterPage: React.FC = () => {
   const cardHeight = useMemo(() => {
     let baseHeight = 606;
     const errorCount = [hasNameError, hasEmailError, hasPasswordError].filter(Boolean).length;
-    
     if (errorCount === 1) return `${baseHeight + 30}px`;
     if (errorCount === 2) return `${baseHeight + 60}px`;
     if (errorCount === 3) return `${baseHeight + 100}px`;
@@ -101,10 +98,7 @@ const RegisterPage: React.FC = () => {
   }, [hasNameError, hasEmailError, hasPasswordError]);
 
   const whitePlaceholderStyle = {
-    "& .MuiInputBase-input::placeholder": {
-      color: "#FFFFFF",
-      opacity: 1, 
-    },
+    "& .MuiInputBase-input::placeholder": { color: "#FFFFFF", opacity: 1 },
   };
 
   return (
@@ -130,6 +124,7 @@ const RegisterPage: React.FC = () => {
           <TypographyLogin sx={{ width: "100%", maxWidth: "138px", mx: "auto", display: "block", mt: "32px" }}>
             Register
           </TypographyLogin>
+          
           <Box sx={{ mt: "31px", ml: "39px", mr: "36px" }}>
             <Typography sx={{ fontWeight: 700, color: "#ABABAB", fontSize: "16px", mb: "15px" }}>Name:</Typography>
             <TextField
@@ -140,12 +135,11 @@ const RegisterPage: React.FC = () => {
               helperText={hasNameError && formik.errors.name}
               sx={whitePlaceholderStyle}
               InputProps={{
-                endAdornment: hasNameError && (
-                  <ClearButton onClick={() => handleClearField("name")} />
-                ),
+                endAdornment: hasNameError && <ClearButton onClick={() => handleClearField("name")} />,
               }}
             />
           </Box>
+
           <Box sx={{ mt: hasNameError ? "47px" : "19px", ml: "39px", mr: "36px" }}>
             <Typography sx={{ fontWeight: 700, color: "#ABABAB", fontSize: "16px", mb: "15px" }}>Email:</Typography>
             <TextField
@@ -157,12 +151,11 @@ const RegisterPage: React.FC = () => {
               helperText={hasEmailError && formik.errors.email}
               sx={whitePlaceholderStyle}
               InputProps={{
-                endAdornment: hasEmailError && (
-                  <ClearButton onClick={() => handleClearField("email")} />
-                ),
+                endAdornment: hasEmailError && <ClearButton onClick={() => handleClearField("email")} />,
               }}
             />
           </Box>
+
           <Box sx={{ mt: hasEmailError ? "47px" : "19px", ml: "39px", mr: "36px" }}>
             <Typography sx={{ fontWeight: 700, color: "#ABABAB", fontSize: "16px", mb: "15px" }}>Password:</Typography>
             <TextField
@@ -176,7 +169,17 @@ const RegisterPage: React.FC = () => {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end" sx={{ position: "absolute", right: "14px", top: "50%", transform: "translateY(-50%)" }}>
-                    <Box onClick={handleTogglePasswordVisibility} component="button" type="button" sx={{ cursor: "pointer", background: "none", border: "none", p: 0, outline: "none" }}>
+                    <Box 
+                      onClick={handleTogglePasswordVisibility} 
+                      component="button" 
+                      type="button" 
+                      sx={{ 
+                        cursor: "pointer", background: "none", border: "none", p: 0, outline: "none", display: "flex", position: "relative", alignItems: "center", justifyContent: "center",
+                        '&::after': {
+                          content: '""', position: 'absolute', width: !showPassword ? "100%" : "0%", height: "1.5px", backgroundColor: "#ABABAB", transform: "rotate(-45deg)", transition: "width 0.2s ease-in-out", pointerEvents: "none",
+                        }
+                      }}
+                    >
                       <EyeOpenIcon style={{ width: "20px", height: "20px", opacity: showPassword ? 1 : 0.7 }} />
                     </Box>
                   </InputAdornment>
@@ -187,7 +190,7 @@ const RegisterPage: React.FC = () => {
 
           <Button
             type="submit"
-            disabled={formik.isSubmitting}
+            disabled={formik.isSubmitting || isLoading}
             sx={{
               mt: hasPasswordError ? "62px" : "31px",
               backgroundColor: "#1D8D94",
@@ -201,10 +204,10 @@ const RegisterPage: React.FC = () => {
               textTransform: "none",
               boxShadow: "0 4px 8px rgba(29, 141, 148, 0.5)",
               "&:hover": { backgroundColor: "#16666c" },
-              "&:disabled": { backgroundColor: "#1D8D94", opacity: 0.7 },
+              "&.Mui-disabled": { backgroundColor: "#1D8D94", opacity: 0.7, color: "#FFFFFF80" },
             }}
           >
-            {formik.isSubmitting ? "Registering..." : "Register"}
+            {formik.isSubmitting || isLoading ? "Registering..." : "Register"}
           </Button>
 
           <Typography align="center" sx={{ fontWeight: 700, mt: "28px", mb: "48px", color: "#ABABAB" }}>
@@ -219,8 +222,7 @@ const RegisterPage: React.FC = () => {
   );
 };
 
-
- const ClearButton = ({ onClick }: { onClick: () => void }) => (
+const ClearButton = ({ onClick }: { onClick: () => void }) => (
   <InputAdornment position="end" sx={{ position: "absolute", right: "14px", top: "50%", transform: "translateY(-50%)" }}>
     <Box onClick={onClick} component="button" type="button" sx={{ cursor: "pointer", background: "none", border: "none", p: 0, display: "flex" }}>
       <CloseIcon style={{ width: "20px", height: "20px" }} />

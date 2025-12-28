@@ -49,11 +49,9 @@ const FigmaTimer: React.FC = () => {
    <svg style={{ position: "absolute", width: 0, height: 0 }}>
   <defs>
     <linearGradient id="figmaGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      {/* شروع کاملاً سبز */}
       <stop offset="0%" stopColor="#40A578" />
       <stop offset="80%" stopColor="#40A578" />
 
-      {/* انتهای گرادینت */}
       <stop offset="100%" stopColor="#2A3342" />
     </linearGradient>
   </defs>
@@ -61,7 +59,6 @@ const FigmaTimer: React.FC = () => {
 
 
 
-      {/* ۱. دایره خاکستری ثابت (پس‌زمینه نوار) */}
       <CircularProgress
         variant="determinate"
         value={100}
@@ -76,7 +73,6 @@ const FigmaTimer: React.FC = () => {
         }}
       />
 
-      {/* ۲. نوار پیشرفت اصلی با گرادینت طیفی */}
       <CircularProgress
         variant="determinate"
         value={progress}
@@ -94,7 +90,6 @@ const FigmaTimer: React.FC = () => {
         }}
       />
 
-      {/* ۳. نقطه متحرک (Dot) */}
       <Box
         sx={{
           position: "absolute",

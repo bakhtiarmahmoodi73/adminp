@@ -190,7 +190,7 @@ function PmSuccessPage() {
           }}
         >
           <TypographyDetail sx={{fontSize:'20px'}}>Address:</TypographyDetail>
-          <TextFieldSuccess sx={{ marginTop: 0, marginLeft: 0 , }} placeholder="X09aa998ee454c456255daf3ac94908f1dcfb7033" />
+          <TextFieldSuccess sx={{ marginTop: 0, marginLeft: 0 , }} disabled placeholder="X09aa998ee454c456255daf3ac94908f1dcfb7033" />
         </BoxDetail>
         <BoxDetail
           sx={{
@@ -199,7 +199,7 @@ function PmSuccessPage() {
           }}
         >
           <TypographyDetail>Amount :</TypographyDetail>
-          <TextFieldSuccess sx={{ marginTop: 0, marginLeft: 0 }} placeholder="100 USDT" />
+          <TextFieldSuccess sx={{ marginTop: 0, marginLeft: 0 }} disabled placeholder="100 USDT" />
         </BoxDetail>
         <BoxDetail
           sx={{
@@ -208,7 +208,7 @@ function PmSuccessPage() {
           }}
         >
           <TypographyDetail>Time & Date :</TypographyDetail>
-          <TextFieldSuccess sx={{ marginTop: 0, marginLeft: 0 }} placeholder="25-02-2023, 13:22:16" />
+          <TextFieldSuccess sx={{ marginTop: 0, marginLeft: 0 }} disabled placeholder="25-02-2023, 13:22:16" />
         </BoxDetail>
         <BoxDetail
           sx={{
@@ -220,6 +220,7 @@ function PmSuccessPage() {
      <TextFieldSuccess
   multiline
   rows={3}
+  disabled
   placeholder="f9798ecf9e9cc54dd819c8e1dc36588a6a7fe9d8e055d56ef6a9847139a4ed6c"
   sx={{
     marginTop: 0,
