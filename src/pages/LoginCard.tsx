@@ -176,9 +176,31 @@ const LoginCard: React.FC = () => {
           </FormBox>
 
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: hasPasswordError ? "62px" : "22px" }}>
-            <Box sx={{ display: "flex", alignItems: "center", ml: "39px" }}>
-              <Box sx={{ width: "18px", height: "18px", borderRadius: "3px", border: "1px solid #5B5F5E", backgroundColor: "#242C39", mt: "6px", mr: "6px" }} />
-              <LabelText sx={{ ml: "6px", mt: 0 }}>Keep Me Login</LabelText>
+            <Box 
+              component="label"
+              sx={{ display: "flex", alignItems: "center", ml: "39px", cursor: "pointer" }}
+              onClick={() => formik.setFieldValue("rememberMe", !formik.values.rememberMe)}
+            >
+              <Box sx={{ 
+                width: "18px", 
+                height: "18px", 
+                borderRadius: "3px", 
+                border: "1px solid #5B5F5E", 
+                backgroundColor: formik.values.rememberMe ? "#1D8D94" : "#242C39", 
+                mt: "6px", 
+                mr: "6px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s ease",
+                '&::after': formik.values.rememberMe ? {
+                    content: '"✓"',
+                    color: "white",
+                    fontSize: "12px",
+                    fontWeight: "bold"
+                } : {}
+              }} />
+              <LabelText sx={{ ml: "6px", mt: 0, cursor: "pointer" }}>Keep Me Login</LabelText>
             </Box>
             <Link to="/auth/forgot-password" style={{ marginRight: "36px", color: "#1D8D94", fontSize: "16px", fontWeight: 700, textDecoration: "none" }}>
               Forgot Your Password?

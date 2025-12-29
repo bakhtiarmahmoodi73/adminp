@@ -16,26 +16,16 @@ import {
 import SearchIcon from "../assets/images/Faq/Frame (14).svg?react";
 import Polyg from "../assets/images/Faq/Polygon 1.svg?react";
 import Arrow from "../assets/images/Faq/Frame (15).svg?react";
-import { Box } from '@mui/material';
-
-interface FaqContent {
-  title: string;
-  content: string;
-}
+import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 
 const Faq: React.FC = () => {
-  const [collapsedStates, setCollapsedStates] = useState<boolean[]>(
-    Array(8).fill(true) 
-  );
-  const toggleCollapse = (index: number): void => {
-    setCollapsedStates(prevStates => {
-      const newStates = [...prevStates];
-      newStates[index] = !newStates[index];
-      return newStates;
-    });
+  const [expanded, setExpanded] = useState<number | false>(false);
+
+  const handleChange = (panel: number) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
+    setExpanded(isExpanded ? panel : false);
   };
 
-  const faqContent: FaqContent = {
+  const faqContent = {
     title: "How To Complete Identity Verification For A Personal Account On The Pmusdt Website?",
     content: "You Can Access The Identity Verification From [Account] - [Identification], Or Click [Verify] / [Get verified] From The Homepage Banners. You Can Check Your Current Verification Level On The Page, Which Determines The Trading Limit Of Your Account. To Increase Your Limit, Please Complete The Respective Identity Verification Level."
   };
@@ -46,16 +36,7 @@ const Faq: React.FC = () => {
         <TypographyFaq>Help Center</TypographyFaq>
         <BoxSearchFaq>
           <TextFieldFaq placeholder="Find Your Desired Question" />
-          <SearchIcon
-            style={{
-              width:"24px",
-              height:"24px",
-              position: "absolute",
-              top: "28px",
-              left: "26px",
-              right: "13px",
-            }}
-          />
+          <SearchIcon style={{ width: "24px", height: "24px", position: "absolute", top: "28px", left: "26px" }} />
           <ButtonFaq>Search</ButtonFaq>
         </BoxSearchFaq>
         <BoxButtonFaq>
@@ -66,21 +47,41 @@ const Faq: React.FC = () => {
           <ButtonFaqInfo> # How To Trade</ButtonFaqInfo>
         </BoxButtonFaq>
       </CardFaq>
-      {collapsedStates.map((isCollapsed: boolean, index: number) => (
-        <CardFaqCollapse
+
+      {Array(8).fill(null).map((_, index) => (
+        <Accordion
           key={index}
+          expanded={expanded === index}
+          onChange={handleChange(index)}
+          component={CardFaqCollapse} 
+          disableGutters
+          elevation={0}
           sx={{
-            height: isCollapsed ? "103px" : "242px",
-            overflow: "hidden",
-            marginTop: index === 0 ? "54px" : "26px", 
+            marginTop: index === 0 ? "54px" : "26px !important",
+            height: expanded === index ? "242px" : "103px", 
+            minHeight: "103px",
+            maxHeight: expanded === index ? "500px" : "103px", 
+            transition: "all 0.3s ease-in-out",
+            display: "flex",
+            flexDirection: "column",
+            '&:before': { display: 'none' }, 
+            backgroundColor: "#242C39 !important",
+            border: "1px solid #2E3E59 !important",
+            borderRadius: "30px !important",
+            '&:first-of-type': { borderRadius: "30px !important" },
+            '&:last-of-type': { borderRadius: "30px !important" },
+            '&.Mui-expanded': { borderRadius: "30px !important" },
           }}
         >
-          <Box
-            onClick={() => toggleCollapse(index)}
-            sx={{ cursor: "pointer" }}
+          <AccordionSummary
+            sx={{
+              padding: 0,
+              '& .MuiAccordionSummary-content': { margin: 0 },
+              '&.Mui-expanded': { minHeight: 'unset' } 
+            }}
           >
-            <CardFlexFaq>
-              <Polyg style={{ marginTop: "5px" }} />
+            <CardFlexFaq style={{ width: '100%', border: 'none', marginTop: "36px" }}>
+              <Polyg style={{marginTop:"5px"}} />
               <TypographyFaqCollapse>
                 {faqContent.title}
               </TypographyFaqCollapse>
@@ -88,19 +89,19 @@ const Faq: React.FC = () => {
                 style={{
                   marginTop: "5px",
                   marginLeft: "55px",
-                  transform: isCollapsed ? "rotate(0deg)" : "rotate(180deg)",
+                  transform: expanded === index ? "rotate(180deg)" : "rotate(0deg)",
                   transition: "transform 0.3s ease"
                 }}
               />
             </CardFlexFaq>
-          </Box>
+          </AccordionSummary>
 
-          {!isCollapsed && (
+          <AccordionDetails sx={{ padding: 0 }}>
             <TypographyFaqCollapseSub>
               {faqContent.content}
             </TypographyFaqCollapseSub>
-          )}
-        </CardFaqCollapse>
+          </AccordionDetails>
+        </Accordion>
       ))}
     </BoxContainer>
   );

@@ -756,7 +756,7 @@ export const ButtonFaq = styled(Button)({
   marginLeft: "20px",
   borderRadius: "10px",
   marginTop: "0px",
-  fontSize: "14px",
+  fontSize: "24px",
   fontWeight: 700,
   color: "#FFFFFF",
   textTransform: "none",
